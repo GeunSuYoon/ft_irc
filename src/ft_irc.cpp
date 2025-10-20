@@ -1,26 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_irc_include.h                                   :+:      :+:    :+:   */
+/*   ft_irc.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/14 21:37:35 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/07/15 18:10:20 by geuyoon          ###   ########.fr       */
+/*   Created: 2025/08/26 12:22:57 by geuyoon           #+#    #+#             */
+/*   Updated: 2025/10/16 10:43:49 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_IRC_INCLUDE_H
-# define FT_IRC_INCLUDE_H
+#include "../includes/ft_irc.hpp"
+#include "./engine/ft_irc_server.hpp"
 
-# include <iostream>
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <sys/epoll.h>
-# include <sys/stat.h>
-# include <netdb.h>
-# include <arpa/inet.h>
-# include <unistd.h>
-# include <fcntl.h>
+int	main(int argc, char **argv)
+{
+	if (argc != 3)
+	{
+		std::cerr << "Error: Invalid program arguments" << std::endl;
+		return (1);
+	}
+	try
+	{
+		Server	ircServ(argv + 1);
 
-#endif
+		ircServ.initServer();
+		ircServ.runServer();
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return (errno);
+	}
+}
