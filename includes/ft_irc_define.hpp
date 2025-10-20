@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_irc_define.h                                    :+:      :+:    :+:   */
+/*   ft_irc_define.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 21:37:50 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/15 09:44:51 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/20 14:56:10 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 # define COMMAND_JOIN		"JOIN"
 # define COMMAND_PART		"PART"
 # define COMMAND_QUIT		"QUIT"
+# define COMMAND_CAP		"CAP"
 // targetmin parameter
 # define TARGETMINKICK		2
 # define TARGETMININVITE	2
@@ -42,6 +43,7 @@
 # define TARGETMINJOIN		1
 # define TARGETMINPART		1
 # define TARGETMINQUIT		0
+# define TARGETMINCAP		-1
 // targetmax parameter
 # define TARGETMAXKICK		5
 # define TARGETMAXINVITE	2
@@ -55,6 +57,7 @@
 # define TARGETMAXJOIN		5
 # define TARGETMAXPART		1
 # define TARGETMAXQUIT		-1
+# define TARGETMAXCAP		-1
 
 # define MODEMSG(server, channel, modes) ((":") + server + " MODE #" + channel + " " + modes + " ")
 # define MODEMSGPARAM(server, channel, modes, parameter) ((":") + server + " MODE #" + channel + " " + modes + " " + parameter)

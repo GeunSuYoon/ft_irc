@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 14:19:28 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/20 14:58:12 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ Server::Server(char **argv)
 	commandFuncs[9] = &Server::commandJoin;
 	commandFuncs[10] = &Server::commandPart;
 	commandFuncs[11] = &Server::commandQuit;
+	commandFuncs[11] = &Server::commandCap;
 	// targetmin parameter init
 	targetMin_[COMMAND_KICK] = TARGETMINKICK;
 	targetMin_[COMMAND_INVITE] = TARGETMININVITE;
@@ -66,6 +67,7 @@ Server::Server(char **argv)
 	targetMin_[COMMAND_JOIN] = TARGETMINJOIN;
 	targetMin_[COMMAND_PART] = TARGETMINPART;
 	targetMin_[COMMAND_QUIT] = TARGETMINQUIT;
+	targetMin_[COMMAND_CAP] = TARGETMINCAP;
 	// targetmax parameter init
 	targetMax_[COMMAND_KICK] = TARGETMAXKICK;
 	targetMax_[COMMAND_INVITE] = TARGETMAXINVITE;
@@ -79,6 +81,7 @@ Server::Server(char **argv)
 	targetMax_[COMMAND_JOIN] = TARGETMAXJOIN;
 	targetMax_[COMMAND_PART] = TARGETMAXPART;
 	targetMax_[COMMAND_QUIT] = TARGETMAXQUIT;
+	targetMax_[COMMAND_CAP] = TARGETMAXCAP;
 }
 
 Server::~Server(void)
@@ -305,10 +308,7 @@ void	Server::commandParsor(Client *client, const std::string& msg)
 		{
 			if (this->isTargetMatch(client, args[0], args))
 			{
-				if (client->getNickName().size())
-					(this->*commandFuncs[cmdFinder])(client, args);
-				else
-					client->sendMsg(ERR_NOTREGISTERED(this->getServerName(), cmd));
+				(this->*commandFuncs[cmdFinder])(client, args);
 			}
 			return ;
 		}
@@ -628,12 +628,14 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 	std::string	targeChannelName(args[1]);
 	Channel		*targetChannel = this->findChannel(targeChannelName);
 
-	// if (targeChannelName[0] == ':')
-	// {
-	// 	if ()
-	// }
-	// else if (!targetChannel)
-	if (!targetChannel)
+	if (targeChannelName[0] == ':')
+	{
+		if (client->getNickName().size())
+			client->sendMsg(ERR_NEEDMOREPARAMS(this->getServerName(), client->getNickName(), args[0]));
+		else
+			client->sendMsg(ERR_NOTREGISTERED(this->getServerName(), args[0]));
+	}
+	else if (!targetChannel)
 		initChannel(client, targeChannelName);
 	else
 	{
@@ -700,6 +702,12 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 		this->clients_.end(), client), this->clients_.end());
 	close(client->getFd());
 	delete	(targetClient);
+}
+
+void	Server::commandCap(Client *client, const std::vector<std::string> &args)
+{
+	(void)args;
+	client->sendMsg("CAP LS :");
 }
 
 bool	Server::commandNickValid(Client *client, const std::string &nick)

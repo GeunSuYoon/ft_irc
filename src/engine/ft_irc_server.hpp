@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:32:01 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/16 10:43:49 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/20 14:57:23 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ class	Server
 		void	setPassword_(const std::string &password);
 		void	setFds_(std::vector<struct pollfd> fds);
 
-		static const int	commandSize = 12;
+		static const int	commandSize = 13;
 		typedef void	(Server::*tCommandFunc)(Client *client, const std::vector<std::string> &args);
 		tCommandFunc	commandFuncs[commandSize];
 
@@ -91,6 +91,7 @@ class	Server
 		void	commandJoin(Client *client, const std::vector<std::string> &args);
 		void	commandPart(Client *client, const std::vector<std::string> &args);
 		void	commandQuit(Client *client, const std::vector<std::string> &args);
+		void	commandCap(Client *client, const std::vector<std::string> &args);
 
 		bool	commandNickValid(Client *client, const std::string &nick);
 
