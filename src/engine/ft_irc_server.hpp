@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:32:01 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 14:57:23 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/20 15:02:30 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ class	Server
 		static const std::string	invalNickChar_;
 		static const std::string	invalNickStartChar_;
 		static const std::string	channelPrefix_;
-		static const std::string	commandList_[];
+		static const std::string	commandList_[commandSize];
 
 	protected:
 		void	acceptClient(void);

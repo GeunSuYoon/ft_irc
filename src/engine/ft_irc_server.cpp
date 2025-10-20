@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 15:01:34 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/20 15:02:44 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 const std::string	Server::invalNickChar_ = " ,*?!@";
 const std::string	Server::invalNickStartChar_ = "$:";
 const std::string	Server::channelPrefix_ = "#&";
-const std::string	Server::commandList_[] = {
+const std::string	Server::commandList_[commandSize] = {
 	COMMAND_KICK,
 	COMMAND_INVITE,
 	COMMAND_TOPIC,
@@ -54,7 +54,7 @@ Server::Server(char **argv)
 	commandFuncs[9] = &Server::commandJoin;
 	commandFuncs[10] = &Server::commandPart;
 	commandFuncs[11] = &Server::commandQuit;
-	commandFuncs[11] = &Server::commandCap;
+	commandFuncs[12] = &Server::commandCap;
 	// targetmin parameter init
 	targetMin_[COMMAND_KICK] = TARGETMINKICK;
 	targetMin_[COMMAND_INVITE] = TARGETMININVITE;
