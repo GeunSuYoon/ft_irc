@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 14:58:12 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/20 15:01:34 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ const std::string	Server::commandList_[] = {
 	COMMAND_PASS,
 	COMMAND_JOIN,
 	COMMAND_PART,
-	COMMAND_QUIT
+	COMMAND_QUIT,
+	COMMAND_CAP
 };
 
 Server::Server(char **argv)
