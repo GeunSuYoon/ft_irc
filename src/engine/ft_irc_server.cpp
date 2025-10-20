@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 15:02:44 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/20 15:07:47 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -708,7 +708,7 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 void	Server::commandCap(Client *client, const std::vector<std::string> &args)
 {
 	(void)args;
-	client->sendMsg("CAP LS :");
+	client->sendMsg(this->serverName_ + " CAP * LS");
 }
 
 bool	Server::commandNickValid(Client *client, const std::string &nick)
