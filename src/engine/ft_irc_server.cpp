@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 13:30:31 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/20 14:19:28 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,8 +305,10 @@ void	Server::commandParsor(Client *client, const std::string& msg)
 		{
 			if (this->isTargetMatch(client, args[0], args))
 			{
-				(this->*commandFuncs[cmdFinder])(client, args);
-
+				if (client->getNickName().size())
+					(this->*commandFuncs[cmdFinder])(client, args);
+				else
+					client->sendMsg(ERR_NOTREGISTERED(this->getServerName(), cmd));
 			}
 			return ;
 		}
@@ -595,6 +597,7 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 	{
 		client->setUserName(args[1]);
 		client->setRealName(args[args.size() - 1]);
+		this->initClientConnect(client);
 	}
 	else
 		client->sendMsg(ERR_NEEDMOREPARAMS(this->serverName_, client->getNickName(), COMMAND_USER));
@@ -625,6 +628,11 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 	std::string	targeChannelName(args[1]);
 	Channel		*targetChannel = this->findChannel(targeChannelName);
 
+	// if (targeChannelName[0] == ':')
+	// {
+	// 	if ()
+	// }
+	// else if (!targetChannel)
 	if (!targetChannel)
 		initChannel(client, targeChannelName);
 	else
@@ -634,7 +642,6 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 		client->joinChannel(targetChannel);
 		this->broadcastChannel(targetChannel, msg);
 	}
-	
 }
 
 void	Server::commandPart(Client *client, const std::vector<std::string> &args)
