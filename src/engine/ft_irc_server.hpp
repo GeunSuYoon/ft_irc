@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:32:01 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 15:02:30 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 13:48:30 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ class	Server
 		bool	commandNickValid(Client *client, const std::string &nick);
 
 		Client	*findClient(const std::string &nickName);
+		Client	*findClientFd(int fd);
 		Channel	*findChannel(const std::string &channelName);
 
 		void	sendMsgClient(Client *client, const std::vector<std::string> &args, const std::string &msg, int code);

@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 13:39:07 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 13:49:55 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,6 +203,7 @@ void	Server::runServer(void)
 				{
 					int		bytes;
 					char	buffer[MAX_BUF_SIZE];
+					Client	*targetClient = this->clients_[fdsCnt - 1];
 					// char	*buffer;
 
 					// client fd에서 받은 문자 기존 문자열에 추가하기
@@ -210,15 +211,18 @@ void	Server::runServer(void)
 					if (bytes > 0)
 					{
 						std::string	buf(buffer, bytes);
+						int			targetClientFd = targetClient->getFd();
 
-						this->clients_[fdsCnt - 1]->appendBuffer(buf, bytes);
+						targetClient->appendBuffer(buf, bytes);
 						// crlf 있으면 커맨드 실행
-						while (this->clients_[fdsCnt - 1]->isCompleteMsg())
+						while (targetClient && targetClient->isCompleteMsg())
 						{
-							std::cout << "Before buffer [" << this->clients_[fdsCnt - 1]->getCmd() << "]" << std::endl;
-							this->commandParsor(this->clients_[fdsCnt - 1], this->clients_[fdsCnt - 1]->getCmd());
-							std::cout << "Finish cmd [" << this->clients_[fdsCnt - 1]->getCmd() << "]" << std::endl;
-							this->clients_[fdsCnt - 1]->clearCmd();
+							std::cout << "Before buffer [" << targetClient->getCmd() << "]" << std::endl;
+							this->commandParsor(targetClient, targetClient->getCmd());
+							std::cout << "Finish cmd" << std::endl;
+							targetClient = this->findClientFd(targetClientFd);
+							if (targetClient)
+								targetClient->clearCmd();
 						}
 					}
 				}
@@ -739,13 +743,18 @@ Client	*Server::findClient(const std::string &nickName)
 			return (*clientList);
 		}
 	}
-	// for (size_t clientCnt = 0; clientCnt < this->clients_.size(); clientCnt++)
-	// {
-	// 	if (nickName == this->clients_[clientCnt]->getNickName())
-	// 	{
-	// 		return (this->clients_[clientCnt]);
-	// 	}
-	// }
+	return (NULL);
+}
+
+Client	*Server::findClientFd(int fd)
+{
+	for (std::vector<Client *>::iterator clientList = this->clients_.begin(); clientList != this->clients_.end(); clientList++)
+	{
+		if (fd == (*clientList)->getFd())
+		{
+			return (*clientList);
+		}
+	}
 	return (NULL);
 }
 
