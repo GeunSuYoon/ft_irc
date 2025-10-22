@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 12:26:36 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 12:54:50 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -567,7 +567,8 @@ void	Server::commandPrivmsg(Client *client, const std::vector<std::string> &args
 			if (targetChannel)
 			{
 				// client->sendMsg(RPL_AWAY(this->serverName_, client->getNickName(), targetChannel->getChannelName(), msg));
-				this->broadcastChannel(targetChannel, msg);
+				if (targetChannel->getChannelMembers().size() != 1)
+					this->broadcastChannel(targetChannel, msg);
 				return ;
 			}
 			else
