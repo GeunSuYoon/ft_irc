@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 12:13:47 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 12:20:19 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,7 +213,7 @@ void	Server::runServer(void)
 
 						this->clients_[fdsCnt - 1]->appendBuffer(buf, bytes);
 						// crlf 있으면 커맨드 실행
-						if (this->clients_[fdsCnt - 1]->isCompleteMsg())
+						while (this->clients_[fdsCnt - 1]->isCompleteMsg())
 						{
 							std::cout << "Before buffer [" << this->clients_[fdsCnt - 1]->getCmd() << "]" << std::endl;
 							this->commandParsor(this->clients_[fdsCnt - 1], this->clients_[fdsCnt - 1]->getCmd());

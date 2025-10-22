@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 09:11:48 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 12:13:24 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 12:18:28 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ bool	Client::isCompleteMsg(void)
 	if (pos == std::string::npos)
 		return (false);
 	this->cmd_ = this->buffer_.substr(0, pos);
-	this->buffer_.erase(pos + 2);
+	this->buffer_.erase(0, pos + 2);
 	return (true);
 }
 
