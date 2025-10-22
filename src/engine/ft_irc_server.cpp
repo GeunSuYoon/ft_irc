@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 12:20:19 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 12:26:36 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -506,6 +506,10 @@ void	Server::commandMode(Client *client, const std::vector<std::string> &args)
 	std::string	targetChannelName(args[1]);
 	Channel		*targetChannel = this->findChannel(targetChannelName);
 
+	if (this->findClient(targetChannelName))
+	{
+		return ;
+	}
 	if (!targetChannel)
 	{
 		client->sendMsg(ERR_NOSUCHCHANNEL(this->serverName_, client->getNickName(), targetChannelName));
