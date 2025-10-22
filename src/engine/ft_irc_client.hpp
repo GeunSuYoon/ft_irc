@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:43:31 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 11:39:45 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 12:13:21 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class	Client
 		std::string	password_;
 
 		std::string	buffer_;
+		std::string	cmd_;
 
 		std::vector<Channel *>	joinedChannels_;
 
@@ -60,6 +61,7 @@ class	Client
 		std::string	const	&getHostName(void) const;
 		std::string	const	&getPassword(void) const;
 		std::string	const	&getBuffer(void) const;
+		std::string	const	&getCmd(void) const;
 
 		std::string			getSendString(void) const;
 
@@ -78,7 +80,7 @@ class	Client
 
 		bool	isCompleteMsg(void);
 		void	appendBuffer(const std::string &buffer, size_t bufSize);
-		void	clearBuffer(void);
+		void	clearCmd(void);
 
 		void	joinChannel(Channel *channel);
 		void	leaveChannel(Channel *channel);

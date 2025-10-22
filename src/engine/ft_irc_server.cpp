@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 11:48:39 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 12:13:47 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,10 +215,10 @@ void	Server::runServer(void)
 						// crlf 있으면 커맨드 실행
 						if (this->clients_[fdsCnt - 1]->isCompleteMsg())
 						{
-							std::cout << "Before buffer [" << this->clients_[fdsCnt - 1]->getBuffer() << "]" << std::endl;
-							this->commandParsor(this->clients_[fdsCnt - 1], this->clients_[fdsCnt - 1]->getBuffer());
-							std::cout << "Finish cmd [" << this->clients_[fdsCnt - 1]->getBuffer() << "]" << std::endl;
-							this->clients_[fdsCnt - 1]->clearBuffer();
+							std::cout << "Before buffer [" << this->clients_[fdsCnt - 1]->getCmd() << "]" << std::endl;
+							this->commandParsor(this->clients_[fdsCnt - 1], this->clients_[fdsCnt - 1]->getCmd());
+							std::cout << "Finish cmd [" << this->clients_[fdsCnt - 1]->getCmd() << "]" << std::endl;
+							this->clients_[fdsCnt - 1]->clearCmd();
 						}
 					}
 				}
@@ -280,15 +280,6 @@ void	Server::initClientConnect(Client *client)
 	client->sendMsg(RPL_MOTD(this->serverName_, client->getNickName(), "*           This is private irc server           *"));
 	client->sendMsg(RPL_MOTD(this->serverName_, client->getNickName(), "**************************************************"));
 	client->sendMsg(RPL_MOTDEND(this->serverName_, client->getNickName()));
-	
-	// (void)client;
-	// std::cout << RPL_MOTDSTART(this->serverName_, client->getNickName()) << std::endl;
-	// std::cout << RPL_MOTD(this->serverName_, client->getNickName(), "**************************************************") << std::endl;
-	// std::cout << RPL_MOTD(this->serverName_, client->getNickName(), "*             H    E    L    L    O              *") << std::endl;
-	// std::cout << RPL_MOTD(this->serverName_, client->getNickName(), "*               Welcome to GeuIrc                *") << std::endl;
-	// std::cout << RPL_MOTD(this->serverName_, client->getNickName(), "*           This is private irc server           *") << std::endl;
-	// std::cout << RPL_MOTD(this->serverName_, client->getNickName(), "**************************************************") << std::endl;
-	// std::cout << RPL_MOTDEND(this->serverName_, client->getNickName()) << std::endl;
 }
 
 void	Server::initChannel(Client *client, const std::string &channelName)
@@ -373,51 +364,12 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 				client->setNickName(nick);
 		}
 	}
-	
-	
-	// if (!client->getRegister())
-	// {
-	// 	client->setRegister(true);
-	// 	initClientConnect(client);
-	// }
-	// else
 	if (client->getRegister())
 	{
-		const std::string	&msg = ":" + client->getSendString() + " " + client->getBuffer();
+		const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
 		
 		client->sendMsg(msg);
 	}
-	// std::string	nick(args[1]);
-
-	// if (nick.size())
-	// {
-	// 	if (this->commandNickValid(client, nick))
-	// 	{
-	// 		if (this->findClient(args[1]))
-	// 		{
-	// 			if (client->getNickName().size())
-	// 				client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, client->getNickName(), args[1]));
-	// 			else
-	// 				client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, "*", args[1]));
-	// 		}
-	// 		else
-	// 			client.setNickName(nick);
-	// 	}
-	// 	else
-	// 	{
-	// 		if (client->getNickName().size())
-	// 			client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, client->getNickName(), args[1]));
-	// 		else
-	// 			client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, "*", args[1]));
-	// 	}
-	// }
-	// else
-	// {
-	// 	if (client->getNickName().size())
-	// 		client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, client->getNickName()));
-	// 	else
-	// 		client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, "*"));
-	// }
 }
 
 void	Server::commandUser(Client *client, const std::vector<std::string> &args)
@@ -442,7 +394,7 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 		}
 		else
 		{
-			const std::string	&msg = ":" + client->getSendString() + " " + client->getBuffer();
+			const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
 
 			client->sendMsg(msg);
 		}
@@ -590,7 +542,7 @@ void	Server::commandMode(Client *client, const std::vector<std::string> &args)
 void	Server::commandPrivmsg(Client *client, const std::vector<std::string> &args)
 {
 	std::string			cmd(args[0]);
-	const std::string	&msg = ":" + client->getSendString() + " " + client->getBuffer();
+	const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
 
 	if (args[args.size() - 1][0] != ':')
 	{
@@ -660,7 +612,7 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 		initChannel(client, targeChannelName);
 	else
 	{
-		const std::string	&msg = ":" + client->getSendString() + " " + client->getBuffer();
+		const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
 		targetChannel->addChannelMember(client);
 		client->joinChannel(targetChannel);
 		this->broadcastChannel(targetChannel, msg);
@@ -669,7 +621,7 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 
 void	Server::commandPart(Client *client, const std::vector<std::string> &args)
 {
-	const std::string	&msg = ":" + client->getSendString() + " " + client->getBuffer();
+	const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
 	const std::string	&targetChannelName(args[1]);
 	Channel				*targetChannel = this->findChannel(targetChannelName);
 

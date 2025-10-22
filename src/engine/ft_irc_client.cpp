@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 09:11:48 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 11:40:49 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 12:13:24 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,11 @@ std::string	const	&Client::getBuffer(void) const
 	return (this->buffer_);
 }
 
+std::string	const	&Client::getCmd(void) const
+{
+	return (this->cmd_);
+}
+
 std::string	Client::getSendString(void) const
 {
 	return (this->nickName_ + "!" + this->userName_ + "@" + this->hostName_);
@@ -135,7 +140,8 @@ bool	Client::isCompleteMsg(void)
 
 	if (pos == std::string::npos)
 		return (false);
-	this->buffer_.erase(pos);
+	this->cmd_ = this->buffer_.substr(0, pos);
+	this->buffer_.erase(pos + 2);
 	return (true);
 }
 
@@ -156,9 +162,9 @@ void	Client::appendBuffer(const std::string &buffer, size_t bufSize)
     }
 }
 
-void	Client::clearBuffer(void)
+void	Client::clearCmd(void)
 {
-	this->buffer_.clear();
+	this->cmd_.clear();
 }
 
 void	Client::joinChannel(Channel *channel)
