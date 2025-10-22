@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:34:45 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/16 09:31:36 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 15:01:18 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,12 @@
 # define ERR_ALREADYREGISTERED(server, client) ((":") + server + " 462 " + client + " :You may not reregister") 
 // 464
 # define ERR_PASSWDMISMATCH(server, client) ((":") + server + " 464 " + client + " :Password incorrect") 
+
+// 473
+# define ERR_INVITEONLYCHAN(server, client, channel) ((":") + server + " 473 " + client + " " + channel + " :Cannot join channel (+i)")
+
+// 473
+# define ERR_BADCHANNELKEY(server, client, channel) ((":") + server + " 473 " + client + " " + channel + " :Cannot join channel (+k)")
 
 // 482
 # define ERR_CHANOPRIVSNEEDED(server, client, channel) ((":") + server + " 482 " + client + " " + channel + " :You're not channel operator") 

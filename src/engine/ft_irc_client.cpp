@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 09:11:48 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 13:09:31 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 14:24:50 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ const std::string	Client::invalNickChar_ = " ,*?!@";
 const std::string	Client::invalNickStartChar_ = "$:";
 
 Client::Client(int fd)
-	: fd_(fd), port_(fd), passwdCorrect_(false), isRegister_(false), ipAddr_(""), userName_(""), nickName_(""), realName_(""), hostName_(""), password_(""), buffer_("")
+	: fd_(fd), port_(fd), isPass_(false), isNick_(false), isUser_(false), isRegister_(false), ipAddr_(""), userName_(""), nickName_(""), realName_(""), hostName_(""), password_(""), buffer_("")
 { }
 
 Client::~Client(void)
@@ -32,12 +32,22 @@ uint16_t	Client::getPort(void) const
 	return (this->port_);
 }
 
-bool	Client::getPasswdCorrect(void) const
+bool	Client::getIsPass(void) const
 {
-	return (this->passwdCorrect_);
+	return (this->isPass_);
 }
 
-bool	Client::getRegister(void) const
+bool	Client::getIsNick(void) const
+{
+	return (this->isNick_);
+}
+
+bool	Client::getIsUser(void) const
+{
+	return (this->isUser_);
+}
+
+bool	Client::getIsRegister(void) const
 {
 	return (this->isRegister_);
 }
@@ -92,12 +102,22 @@ void	Client::setPort(uint16_t port)
 	this->port_ = port;
 }
 
-void	Client::setPasswdCorrect(bool passwdCorrect)
+void	Client::setIsPass(bool isPass)
 {
-	this->passwdCorrect_ = passwdCorrect;
+	this->isPass_ = isPass;
 }
 
-void	Client::setRegister(bool isRegister)
+void	Client::setIsNick(bool isNick)
+{
+	this->isNick_ = isNick;
+}
+
+void	Client::setIsUser(bool isUser)
+{
+	this->isUser_ = isUser;
+}
+
+void	Client::setIsRegister(bool isRegister)
 {
 	this->isRegister_ = isRegister;
 }

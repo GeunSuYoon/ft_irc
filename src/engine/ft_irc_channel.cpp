@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 09:18:18 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/16 10:24:25 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 15:31:42 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ const std::string	Channel::modeFlags_[] = {
 
 
 Channel::Channel(const std::string &channelName, Client *client)
-	: channelName_(channelName)
+	: channelName_(channelName), modeInviteOnly_(false), modeTopicOperator(false), topic_(""), password_("")
 {
 	this->channelOperator_.push_back(client);
 	this->channelMembers_.push_back(client);
@@ -43,7 +43,7 @@ const std::string	&Channel::getChannelName(void) const
 	return (this->channelName_);
 }
 
-bool	Channel::getInviteOnly(void) const
+bool	Channel::getModeInviteOnly(void) const
 {
 	return (this->modeInviteOnly_);
 }
@@ -78,7 +78,7 @@ void	Channel::setChannelName(const std::string &channelName)
 	this->channelName_ = channelName;
 }
 
-void	Channel::setInviteOnly(bool inviteOnly)
+void	Channel::setModeInviteOnly(bool inviteOnly)
 {
 	this->modeInviteOnly_ = inviteOnly;
 }

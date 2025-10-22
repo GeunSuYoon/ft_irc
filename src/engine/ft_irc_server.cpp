@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 13:49:55 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 15:27:57 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,8 @@ void	Server::runServer(void)
 							targetClient = this->findClientFd(targetClientFd);
 							if (targetClient)
 								targetClient->clearCmd();
+							else
+								break ;
 						}
 					}
 				}
@@ -322,12 +324,12 @@ void	Server::commandPass(Client *client, const std::vector<std::string> &args)
 		client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
 		return ;
 	}
-	if (client->getRegister() || client->getPasswdCorrect())
+	if (client->getIsRegister() || client->getIsPass())
 	{
 		client->sendMsg(ERR_ALREADYREGISTERED(this->serverName_, client->getNickName()));
 		return ;
 	}
-	client->setPasswdCorrect(true);
+	client->setIsPass(true);
 }
 
 void	Server::commandNick(Client *client, const std::vector<std::string> &args)
@@ -367,45 +369,33 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 				return ;
 			}
 			else
+			{
 				client->setNickName(nick);
+				client->setIsNick(true);
+			}
 		}
 	}
-	if (client->getRegister())
+	if (client->getIsRegister())
 	{
 		const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
 		
 		client->sendMsg(msg);
 	}
+	else if (client->getIsPass() && client->getIsNick() && client->getIsUser())
+	{
+		client->setIsRegister(true);
+		initClientConnect(client);
+	}
 }
 
 void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 {
-	if (!client->getPasswdCorrect())
+	if (!client->getIsPass())
 	{
 		if (client->getNickName().size())
 			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
 		else
 			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, "*"));
-		Client	*targetClient = client;
-		int		clientFd = targetClient->getFd();
-
-		for (std::vector<Channel *>::iterator channelList = this->channels_.begin(); channelList != this->channels_.end(); channelList++)
-		{
-			(*channelList)->removeChannelMember(client);
-			client->leaveChannel(*channelList);
-		}
-		this->clients_.erase(std::remove(this->clients_.begin(), \
-			this->clients_.end(), client), this->clients_.end());
-		for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
-		{
-			if (it->fd == clientFd)
-			{
-				this->fds_.erase(it);
-				break;
-			}
-		}
-		close(clientFd);
-		delete	(targetClient);
 		return ;
 	}
 	if (args[1].size() && args[args.size() - 1].size())
@@ -413,10 +403,14 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 		client->setUserName(args[1]);
 		client->setHostName(args[2]);
 		client->setRealName(args[args.size() - 1]);
-		if (!client->getRegister())
+		if (!client->getIsRegister())
 		{
-			client->setRegister(true);
-			initClientConnect(client);
+			client->setIsUser(true);
+			if (client->getIsPass() && client->getIsNick() && client->getIsUser())
+			{
+				client->setIsRegister(true);
+				initClientConnect(client);
+			}
 		}
 		else
 		{
@@ -643,7 +637,18 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 		initChannel(client, targeChannelName);
 	else
 	{
+		if (targetChannel->getModeInviteOnly() && !targetChannel->findTargetClient(client->getNickName()))
+		{
+			client->sendMsg(ERR_INVITEONLYCHAN(this->serverName_, client->getNickName(), targetChannel->getChannelName()));	
+			return ;
+		}
+		if (targetChannel->getPassword().size() && (args.size() != 3 || targetChannel->getPassword() != args[2]))
+		{
+			client->sendMsg(ERR_BADCHANNELKEY(this->serverName_, client->getNickName(), targetChannel->getChannelName()));
+			return ;
+		}
 		const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
+
 		targetChannel->addChannelMember(client);
 		client->joinChannel(targetChannel);
 		this->broadcastChannel(targetChannel, msg);
@@ -692,11 +697,20 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 	(void)args;
 	Client	*targetClient = client;
 	int		clientFd = targetClient->getFd();
+	std::vector<Channel *>::iterator channelList = this->channels_.begin();
 
-	for (std::vector<Channel *>::iterator channelList = this->channels_.begin(); channelList != this->channels_.end(); channelList++)
+	while (channelList != this->channels_.end())
 	{
 		(*channelList)->removeChannelMember(client);
 		client->leaveChannel(*channelList);
+		if ((*channelList)->getChannelMembers().empty())
+		{
+			channelList = this->channels_.erase(channelList);
+		}
+		else
+		{
+			channelList++;
+		}
 	}
 	this->clients_.erase(std::remove(this->clients_.begin(), \
 		this->clients_.end(), client), this->clients_.end());
@@ -767,13 +781,6 @@ Channel	*Server::findChannel(const std::string &channelName)
 			return (*channelList);
 		}
 	}
-	// for (size_t channelCnt = 0; channelCnt < this->channels_.size(); channelCnt++)
-	// {
-	// 	if (channelName == this->channels_[channelCnt]->getChannelName())
-	// 	{
-	// 		return (this->channels_[channelCnt]);
-	// 	}
-	// }
 	return (NULL);
 }
 

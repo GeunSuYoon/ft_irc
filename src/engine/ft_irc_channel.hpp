@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 08:31:59 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/16 10:25:08 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 15:06:26 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class	Channel
 	private:
 		std::string				channelName_;
 		bool					modeInviteOnly_;
+		// bool					modeKey_;
 		bool					modeTopicOperator;
 		int						userLimit_;
 		std::string				topic_;
@@ -46,7 +47,8 @@ class	Channel
 		~Channel(void);
 
 		const std::string	&getChannelName(void) const;
-		bool				getInviteOnly(void) const;
+		bool				getModeInviteOnly(void) const;
+		// bool				getModeInviteOnly(void) const;
 		int					getUserLimit(void) const;
 		const std::string	&getTopic(void) const;
 		const std::string	&getPassword(void) const;
@@ -54,7 +56,7 @@ class	Channel
 		// Client				*getChannelOperator(void) const;
 
 		void	setChannelName(const std::string &channelName);
-		void	setInviteOnly(bool inviteOnly);
+		void	setModeInviteOnly(bool inviteOnly);
 		void	setUserLimit(int userLimit);
 		void	setTopic(const std::string &topic);
 		void	setPassword(const std::string &password);

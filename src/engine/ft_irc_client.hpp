@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:43:31 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 13:00:22 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 14:23:32 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,9 @@ class	Client
 	private:
 		int			fd_;
 		uint16_t	port_;
-		bool		passwdCorrect_;
+		bool		isPass_;
+		bool		isNick_;
+		bool		isUser_;
 		bool		isRegister_;
 
 		std::string	ipAddr_;
@@ -52,8 +54,10 @@ class	Client
 
 		int					getFd(void) const;
 		uint16_t			getPort(void) const;
-		bool				getPasswdCorrect(void) const;
-		bool				getRegister(void) const;
+		bool				getIsPass(void) const;
+		bool				getIsNick(void) const;
+		bool				getIsUser(void) const;
+		bool				getIsRegister(void) const;
 		std::string	const	&getIpAddr(void) const;
 		std::string	const	&getUserName(void) const;
 		std::string	const	&getNickName(void) const;
@@ -66,8 +70,10 @@ class	Client
 		std::string			getSendString(void) const;
 
 		void	setPort(uint16_t port);
-		void	setPasswdCorrect(bool passwdCorrect);
-		void	setRegister(bool isRegister);
+		void	setIsPass(bool isPass);
+		void	setIsNick(bool isNick);
+		void	setIsUser(bool isUser);
+		void	setIsRegister(bool isRegister);
 		void	setIpAddr(const std::string &ipAddr);
 		void	setUserName(const std::string &userName);
 		void	setRealName(const std::string &realName);
