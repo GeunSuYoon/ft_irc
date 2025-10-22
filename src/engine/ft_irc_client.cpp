@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 09:11:48 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 13:00:44 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 13:09:31 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ std::string	const	&Client::getCmd(void) const
 
 std::string	Client::getSendString(void) const
 {
-	return (this->nickName_ + "!" + this->userName_ + "@" + this->hostName_);
+	return (this->nickName_ + "!" + this->userName_ + "@" + this->ipAddr_);
 }
 
 void	Client::setPort(uint16_t port)
