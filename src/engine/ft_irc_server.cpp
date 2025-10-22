@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 11:04:34 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 11:30:37 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -689,6 +689,7 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 	(void)args;
 	Client	*targetClient = client;
 	int		clientFd = targetClient->getFd();
+	// struct pollfd	clientPollfd;
 
 	for (std::vector<Channel *>::iterator channelList = this->channels_.begin(); channelList != this->channels_.end(); channelList++)
 	{
@@ -702,13 +703,25 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 	// }
 	this->clients_.erase(std::remove(this->clients_.begin(), \
 		this->clients_.end(), client), this->clients_.end());
-	for (int fdsCnt = 1; fdsCnt < this->fds_.size(); fdsCnt++)
+	for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
 	{
-		if (this->fds_[fdsCnt].fd == clientFd)
-			this->fds_.erase(std::remove(this->fds_.begin(), \
-				this->fds_.end(), this->fds_[fdsCnt]), this->fds_.end());
+		if (it->fd == clientFd)
+		{
+			this->fds_.erase(it);
+			break;
+		}
 	}
-	close(client->getFd());
+	// for (int fdsCnt = 1; fdsCnt < static_cast<int>(this->fds_.size()); fdsCnt++)
+	// {
+	// 	if (this->fds_[fdsCnt].fd == clientFd)
+	// 	{
+	// 		clientPollfd = this->fds_[fdsCnt];
+	// 		break ;
+	// 	}
+	// }
+	// this->fds_.erase(std::remove(this->fds_.begin(), 
+	// 	this->fds_.end(), clientPollfd), this->fds_.end());
+	close(clientFd);
 	delete	(targetClient);
 }
 
