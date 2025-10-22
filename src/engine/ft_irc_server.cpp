@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 13:02:01 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 13:27:21 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,6 +330,8 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 {
 	std::string	nick(args[1]);
 
+	if (client->getNickName() == nick)
+		return ;
 	switch (client->isValideNick(nick))
 	{
 		case (431):
@@ -643,6 +645,7 @@ void	Server::commandPart(Client *client, const std::vector<std::string> &args)
 
 			default:
 			{
+				client->sendMsg(msg);
 				if (targetChannel->getChannelMembers().size())
 				{
 					this->broadcastChannel(targetChannel, msg);
@@ -653,7 +656,6 @@ void	Server::commandPart(Client *client, const std::vector<std::string> &args)
 						this->channels_.end(), targetChannel), this->channels_.end());
 					delete	(targetChannel);
 				}
-				client->sendMsg(msg);
 				break;
 			}
 		}
