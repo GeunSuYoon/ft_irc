@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 15:07:47 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 11:04:34 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -688,6 +688,7 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 {
 	(void)args;
 	Client	*targetClient = client;
+	int		clientFd = targetClient->getFd();
 
 	for (std::vector<Channel *>::iterator channelList = this->channels_.begin(); channelList != this->channels_.end(); channelList++)
 	{
@@ -701,6 +702,12 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 	// }
 	this->clients_.erase(std::remove(this->clients_.begin(), \
 		this->clients_.end(), client), this->clients_.end());
+	for (int fdsCnt = 1; fdsCnt < this->fds_.size(); fdsCnt++)
+	{
+		if (this->fds_[fdsCnt].fd == clientFd)
+			this->fds_.erase(std::remove(this->fds_.begin(), \
+				this->fds_.end(), this->fds_[fdsCnt]), this->fds_.end());
+	}
 	close(client->getFd());
 	delete	(targetClient);
 }
