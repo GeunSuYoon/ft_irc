@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:43:31 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 12:13:21 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 13:00:22 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ class	Client
 		void	setUserName(const std::string &userName);
 		void	setRealName(const std::string &realName);
 		void	setNickName(const std::string &nickName);
+		void	setHostName(const std::string &hostName);
 		void	setPassword(const std::string &password);
 
 		void	sendMsg(const std::string &msg);

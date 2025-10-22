@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 12:54:50 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 13:02:01 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -385,6 +385,7 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 	if (args[1].size() && args[args.size() - 1].size())
 	{
 		client->setUserName(args[1]);
+		client->setHostName(args[2]);
 		client->setRealName(args[args.size() - 1]);
 		// this->initClientConnect(client);
 		if (!client->getRegister())

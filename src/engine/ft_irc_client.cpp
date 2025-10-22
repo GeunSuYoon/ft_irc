@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 09:11:48 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 12:18:28 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 13:00:44 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,11 @@ void	Client::setRealName(const std::string &realName)
 void	Client::setNickName(const std::string &nickName)
 {
 	this->nickName_ = nickName;
+}
+
+void	Client::setHostName(const std::string &hostName)
+{
+	this->hostName_ = hostName;
 }
 
 void	Client::setPassword(const std::string &password)
