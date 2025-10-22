@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 11:30:37 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 11:48:39 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,6 +320,136 @@ void	Server::commandParsor(Client *client, const std::string& msg)
 		client->sendMsg(ERR_UNKNOWNCOMMAND(this->serverName_, "*", cmd));
 }
 
+void	Server::commandPass(Client *client, const std::vector<std::string> &args)
+{
+	if (this->password_ != args[1])
+	{
+		client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
+		return ;
+	}
+	if (client->getRegister() || client->getPasswdCorrect())
+	{
+		client->sendMsg(ERR_ALREADYREGISTERED(this->serverName_, client->getNickName()));
+		return ;
+	}
+	client->setPasswdCorrect(true);
+}
+
+void	Server::commandNick(Client *client, const std::vector<std::string> &args)
+{
+	std::string	nick(args[1]);
+
+	switch (client->isValideNick(nick))
+	{
+		case (431):
+		{
+			if (client->getNickName().size())
+				client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, client->getNickName()));
+			else
+				client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, "*"));
+			return ;
+		}
+	
+		case (432):
+		{
+			if (client->getNickName().size())
+				client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, client->getNickName(), nick));
+			else
+				client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, "*", nick));
+			return ;
+		}
+
+		default:
+		{
+			if (this->findClient(nick))
+			{
+				if (client->getNickName().size())
+					client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, client->getNickName(), nick));
+				else
+					client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, "*", nick));
+				return ;
+			}
+			else
+				client->setNickName(nick);
+		}
+	}
+	
+	
+	// if (!client->getRegister())
+	// {
+	// 	client->setRegister(true);
+	// 	initClientConnect(client);
+	// }
+	// else
+	if (client->getRegister())
+	{
+		const std::string	&msg = ":" + client->getSendString() + " " + client->getBuffer();
+		
+		client->sendMsg(msg);
+	}
+	// std::string	nick(args[1]);
+
+	// if (nick.size())
+	// {
+	// 	if (this->commandNickValid(client, nick))
+	// 	{
+	// 		if (this->findClient(args[1]))
+	// 		{
+	// 			if (client->getNickName().size())
+	// 				client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, client->getNickName(), args[1]));
+	// 			else
+	// 				client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, "*", args[1]));
+	// 		}
+	// 		else
+	// 			client.setNickName(nick);
+	// 	}
+	// 	else
+	// 	{
+	// 		if (client->getNickName().size())
+	// 			client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, client->getNickName(), args[1]));
+	// 		else
+	// 			client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, "*", args[1]));
+	// 	}
+	// }
+	// else
+	// {
+	// 	if (client->getNickName().size())
+	// 		client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, client->getNickName()));
+	// 	else
+	// 		client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, "*"));
+	// }
+}
+
+void	Server::commandUser(Client *client, const std::vector<std::string> &args)
+{
+	if (!client->getPasswdCorrect())
+	{
+		if (client->getNickName().size())
+			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
+		else
+			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, "*"));
+		return ;
+	}
+	if (args[1].size() && args[args.size() - 1].size())
+	{
+		client->setUserName(args[1]);
+		client->setRealName(args[args.size() - 1]);
+		// this->initClientConnect(client);
+		if (!client->getRegister())
+		{
+			client->setRegister(true);
+			initClientConnect(client);
+		}
+		else
+		{
+			const std::string	&msg = ":" + client->getSendString() + " " + client->getBuffer();
+
+			client->sendMsg(msg);
+		}
+	}
+	else
+		client->sendMsg(ERR_NEEDMOREPARAMS(this->serverName_, client->getNickName(), COMMAND_USER));
+}
 void	Server::commandKick(Client *client, const std::vector<std::string> &args)
 {
 	std::string	targeChannelName(args[1]);
@@ -457,90 +587,6 @@ void	Server::commandMode(Client *client, const std::vector<std::string> &args)
 	}
 }
 
-void	Server::commandNick(Client *client, const std::vector<std::string> &args)
-{
-	std::string	nick(args[1]);
-
-	switch (client->isValideNick(nick))
-	{
-		case (431):
-		{
-			if (client->getNickName().size())
-				client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, client->getNickName()));
-			else
-				client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, "*"));
-			return ;
-		}
-	
-		case (432):
-		{
-			if (client->getNickName().size())
-				client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, client->getNickName(), nick));
-			else
-				client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, "*", nick));
-			return ;
-		}
-
-		default:
-		{
-			if (this->findClient(nick))
-			{
-				if (client->getNickName().size())
-					client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, client->getNickName(), nick));
-				else
-					client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, "*", nick));
-				return ;
-			}
-			else
-				client->setNickName(nick);
-		}
-	}
-	
-	
-	if (!client->getRegister())
-	{
-		client->setRegister(true);
-		initClientConnect(client);
-	}
-	else
-	{
-		const std::string	&msg = ":" + client->getSendString() + " " + client->getBuffer();
-		
-		client->sendMsg(msg);
-	}
-	// std::string	nick(args[1]);
-
-	// if (nick.size())
-	// {
-	// 	if (this->commandNickValid(client, nick))
-	// 	{
-	// 		if (this->findClient(args[1]))
-	// 		{
-	// 			if (client->getNickName().size())
-	// 				client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, client->getNickName(), args[1]));
-	// 			else
-	// 				client->sendMsg(ERR_NICKNAMEINUSE(this->serverName_, "*", args[1]));
-	// 		}
-	// 		else
-	// 			client.setNickName(nick);
-	// 	}
-	// 	else
-	// 	{
-	// 		if (client->getNickName().size())
-	// 			client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, client->getNickName(), args[1]));
-	// 		else
-	// 			client->sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, "*", args[1]));
-	// 	}
-	// }
-	// else
-	// {
-	// 	if (client->getNickName().size())
-	// 		client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, client->getNickName()));
-	// 	else
-	// 		client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, "*"));
-	// }
-}
-
 void	Server::commandPrivmsg(Client *client, const std::vector<std::string> &args)
 {
 	std::string			cmd(args[0]);
@@ -592,36 +638,10 @@ void	Server::commandPrivmsg(Client *client, const std::vector<std::string> &args
 	}
 }
 
-void	Server::commandUser(Client *client, const std::vector<std::string> &args)
-{
-	if (args[1].size() && args[args.size() - 1].size())
-	{
-		client->setUserName(args[1]);
-		client->setRealName(args[args.size() - 1]);
-		this->initClientConnect(client);
-	}
-	else
-		client->sendMsg(ERR_NEEDMOREPARAMS(this->serverName_, client->getNickName(), COMMAND_USER));
-}
 
 void	Server::commandPong(Client *client, const std::vector<std::string> &args)
 {
 	client->sendMsg(":" + this->serverName_ + " PONG " + args[1] + " :" + this->serverName_);
-}
-
-void	Server::commandPass(Client *client, const std::vector<std::string> &args)
-{
-	if (this->password_ != args[1])
-	{
-		client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
-		return ;
-	}
-	if (client->getRegister())
-	{
-		client->sendMsg(ERR_ALREADYREGISTERED(this->serverName_, client->getNickName()));
-		return ;
-	}
-	// client.setRegister(true);
 }
 
 void	Server::commandJoin(Client *client, const std::vector<std::string> &args)

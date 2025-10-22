@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:43:31 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/16 10:18:26 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 11:39:45 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class	Client
 	private:
 		int			fd_;
 		uint16_t	port_;
+		bool		passwdCorrect_;
 		bool		isRegister_;
 
 		std::string	ipAddr_;
@@ -50,6 +51,7 @@ class	Client
 
 		int					getFd(void) const;
 		uint16_t			getPort(void) const;
+		bool				getPasswdCorrect(void) const;
 		bool				getRegister(void) const;
 		std::string	const	&getIpAddr(void) const;
 		std::string	const	&getUserName(void) const;
@@ -62,6 +64,7 @@ class	Client
 		std::string			getSendString(void) const;
 
 		void	setPort(uint16_t port);
+		void	setPasswdCorrect(bool passwdCorrect);
 		void	setRegister(bool isRegister);
 		void	setIpAddr(const std::string &ipAddr);
 		void	setUserName(const std::string &userName);

@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 09:11:48 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 13:27:22 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 11:40:49 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ const std::string	Client::invalNickChar_ = " ,*?!@";
 const std::string	Client::invalNickStartChar_ = "$:";
 
 Client::Client(int fd)
-	: fd_(fd), port_(fd), isRegister_(false), ipAddr_(""), userName_(""), nickName_(""), realName_(""), hostName_(""), password_(""), buffer_("")
+	: fd_(fd), port_(fd), passwdCorrect_(false), isRegister_(false), ipAddr_(""), userName_(""), nickName_(""), realName_(""), hostName_(""), password_(""), buffer_("")
 { }
 
 Client::~Client(void)
@@ -30,6 +30,11 @@ int	Client::getFd(void) const
 uint16_t	Client::getPort(void) const
 {
 	return (this->port_);
+}
+
+bool	Client::getPasswdCorrect(void) const
+{
+	return (this->passwdCorrect_);
 }
 
 bool	Client::getRegister(void) const
@@ -80,6 +85,11 @@ std::string	Client::getSendString(void) const
 void	Client::setPort(uint16_t port)
 {
 	this->port_ = port;
+}
+
+void	Client::setPasswdCorrect(bool passwdCorrect)
+{
+	this->passwdCorrect_ = passwdCorrect;
 }
 
 void	Client::setRegister(bool isRegister)
