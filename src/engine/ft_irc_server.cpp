@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 13:27:21 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/22 13:39:07 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,6 +382,26 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
 		else
 			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, "*"));
+		Client	*targetClient = client;
+		int		clientFd = targetClient->getFd();
+
+		for (std::vector<Channel *>::iterator channelList = this->channels_.begin(); channelList != this->channels_.end(); channelList++)
+		{
+			(*channelList)->removeChannelMember(client);
+			client->leaveChannel(*channelList);
+		}
+		this->clients_.erase(std::remove(this->clients_.begin(), \
+			this->clients_.end(), client), this->clients_.end());
+		for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
+		{
+			if (it->fd == clientFd)
+			{
+				this->fds_.erase(it);
+				break;
+			}
+		}
+		close(clientFd);
+		delete	(targetClient);
 		return ;
 	}
 	if (args[1].size() && args[args.size() - 1].size())
@@ -389,7 +409,6 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 		client->setUserName(args[1]);
 		client->setHostName(args[2]);
 		client->setRealName(args[args.size() - 1]);
-		// this->initClientConnect(client);
 		if (!client->getRegister())
 		{
 			client->setRegister(true);
@@ -669,18 +688,12 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 	(void)args;
 	Client	*targetClient = client;
 	int		clientFd = targetClient->getFd();
-	// struct pollfd	clientPollfd;
 
 	for (std::vector<Channel *>::iterator channelList = this->channels_.begin(); channelList != this->channels_.end(); channelList++)
 	{
 		(*channelList)->removeChannelMember(client);
 		client->leaveChannel(*channelList);
 	}
-	// for (int channelCnt = 0; channelCnt < this->channels_.size(); channelCnt++)
-	// {
-	// 	this->channels_[channelCnt]->removeChannelMember(client);
-	// 	client->leaveChannel(this->channels_[channelCnt]);
-	// }
 	this->clients_.erase(std::remove(this->clients_.begin(), \
 		this->clients_.end(), client), this->clients_.end());
 	for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
@@ -691,16 +704,6 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 			break;
 		}
 	}
-	// for (int fdsCnt = 1; fdsCnt < static_cast<int>(this->fds_.size()); fdsCnt++)
-	// {
-	// 	if (this->fds_[fdsCnt].fd == clientFd)
-	// 	{
-	// 		clientPollfd = this->fds_[fdsCnt];
-	// 		break ;
-	// 	}
-	// }
-	// this->fds_.erase(std::remove(this->fds_.begin(), 
-	// 	this->fds_.end(), clientPollfd), this->fds_.end());
 	close(clientFd);
 	delete	(targetClient);
 }
