@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:32:01 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 13:48:30 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 14:00:08 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,6 @@
 
 # define MAXWAITINGCONNECTIONS 10
 # define MAXTIMEOUT 1000
-
-// std::string	commandList[] = {
-// 	COMMAND_KICK,
-// 	COMMAND_INVITE,
-// 	COMMAND_TOPIC,
-// 	COMMAND_MODE,
-// 	COMMAND_NICK,
-// 	COMMAND_PRIVMSG,
-// 	COMMAND_USER,
-// 	COMMAND_PING,
-// 	COMMAND_PASS,
-// 	COMMAND_JOIN,
-// 	COMMAND_PART,
-// 	COMMAND_QUIT
-// };
 
 class	Client;
 class	Channel;
@@ -99,7 +84,6 @@ class	Server
 		Client	*findClientFd(int fd);
 		Channel	*findChannel(const std::string &channelName);
 
-		void	sendMsgClient(Client *client, const std::vector<std::string> &args, const std::string &msg, int code);
 
 		int		isTargetMatch(Client *client, const std::string &cmd, const std::vector<std::string> &args) const;
 
@@ -107,7 +91,9 @@ class	Server
 		int		getTargetMaxCommand(const std::string &cmd) const;
 
 		void	sendEventMsg(Client *client, const std::string &msg);
-		void	broadcastChannel(Channel *channel, const std::string &msg);
+		void	sendMsgClient(Client *client, const std::string &clientName, const std::string &channelName, \
+			const std::string &cmd, const std::string &arg, int code);
+		void	broadcastChannel(Channel *channel, const std::string &msg, Client *client, bool clientSend);
 	public:
 		Server(char **argv);
 		~Server(void);

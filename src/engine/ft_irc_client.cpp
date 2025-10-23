@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 09:11:48 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 14:24:50 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 14:31:31 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,17 +174,7 @@ void	Client::appendBuffer(const std::string &buffer, size_t bufSize)
 {
 	size_t	len = std::min(bufSize, buffer.size());
 
-	// std::cout << "fd [" << this->fd_ << "]" << std::endl;
-	// std::cout << "Before buffer [" << this->buffer_ << "]" << std::endl;
-	// this->buffer_.append(buffer, 0, len);
-	try 
-	{
-        this->buffer_.append(buffer, 0, len);
-    } 
-	catch (const std::exception &e) 
-	{
-        std::cerr << "append failed: " << e.what() << std::endl;
-    }
+	this->buffer_.append(buffer, 0, len);
 }
 
 void	Client::clearCmd(void)
@@ -201,7 +191,6 @@ void	Client::leaveChannel(Channel *channel)
 {
 	this->joinedChannels_.erase(std::remove(this->joinedChannels_.begin(), this->joinedChannels_.end(), channel), \
 		this->joinedChannels_.end());
-	// this->joinedChannels_.push_back(channel);
 }
 
 int	Client::isValideNick(const std::string &nick)
@@ -213,19 +202,3 @@ int	Client::isValideNick(const std::string &nick)
 		return (432);
 	return (0);
 }
-
-// bool	Client::commandNickValid(const std::string &nick)
-// {
-// 	if (invalNickStartChar_.find(nick[0]) != std::string::npos || 
-// 		nick.find_first_of(invalNickChar_) != std::string::npos)
-// 	{
-// 		client.sendMsg(ERR_ERRONEUSNICKNAME(this->serverName_, client.getUserName(), nick));
-// 		return (false);
-// 	}
-// 	if (this->findClient(nick))
-// 	{
-// 		client.sendMsg(ERR_NICKNAMEINUSE(this->serverName_, client.getNickName(), nick));
-// 		return (false);
-// 	}
-// 	return (true);
-// }

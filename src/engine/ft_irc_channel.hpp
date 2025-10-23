@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 08:31:59 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 15:06:26 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 15:13:41 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ class	Channel
 		const std::string	&getTopic(void) const;
 		const std::string	&getPassword(void) const;
 		const std::vector<Client *>	&getChannelMembers(void) const;
+		
+		std::string	getChannelMembersName(void) const;
 		// Client				*getChannelOperator(void) const;
 
 		void	setChannelName(const std::string &channelName);
@@ -70,8 +72,9 @@ class	Channel
 		// client function
 		int	inviteMember(Client *client, Client *targetClient);
 		std::vector<int>	kickMember(Client *client, const std::vector<std::string> &args);
+		int	topicChannel(Client *client, const std::string &topic);
 
-		bool	isOperator(Client *client);
+		bool	isOperator(Client *client) const;
 
 		void	changeInviteOnly(void);
 

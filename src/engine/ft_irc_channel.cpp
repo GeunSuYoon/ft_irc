@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 09:18:18 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 15:31:42 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 15:13:50 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ const std::string	Channel::modeFlags_[] = {
 	"-o",
 	"-l"
 };
-
 
 Channel::Channel(const std::string &channelName, Client *client)
 	: channelName_(channelName), modeInviteOnly_(false), modeTopicOperator(false), topic_(""), password_("")
@@ -68,10 +67,21 @@ const std::vector<Client *>	&Channel::getChannelMembers(void) const
 	return (this->channelMembers_);
 }
 
-// Client	*Channel::getChannelOperator(void) const
-// {
-// 	return (this->channelOperator_);
-// }
+std::string	Channel::getChannelMembersName(void) const
+{
+	std::string	channelMembersName;
+
+	for (std::vector<Client *>::const_iterator channelMemberList = this->channelMembers_.begin(); \
+		channelMemberList != this->channelMembers_.end(); channelMemberList++)
+	{
+		if (channelMemberList != this->channelMembers_.begin())
+			channelMembersName += " ";
+		if (this->isOperator(*channelMemberList))
+			channelMembersName += "@";
+		channelMembersName += (*channelMemberList)->getNickName();
+	}
+	return (channelMembersName);
+}
 
 void	Channel::setChannelName(const std::string &channelName)
 {
@@ -129,8 +139,6 @@ int	Channel::partChannelMember(Client *client)
 {
 	if (this->findTargetClient(client->getNickName()))
 	{
-		this->removeChannelMember(client);
-		client->leaveChannel(this);
 		return (0);
 	}
 	else
@@ -235,15 +243,11 @@ int	Channel::modeChannel(Client *client, const std::vector<std::string> &args)
 
 int	Channel::inviteMember(Client *client, Client *targetClient)
 {
-	// Client	*alreadyJoinedClient = this->findTargetClient(client->getNickName());
-
 	// check if client is already in this channel
 	if (this->isOperator(client))
 	{
 		if (this->findTargetClient(targetClient->getNickName()))
 			return (443);
-		targetClient->joinChannel(this);
-		this->channelMembers_.push_back(targetClient);
 		return (0);
 	}
 	return (482);
@@ -262,9 +266,6 @@ std::vector<int>	Channel::kickMember(Client *client, const std::vector<std::stri
 
 			if (targetClient)
 			{
-				targetClient->leaveChannel(this);
-				this->channelMembers_.erase(std::remove(this->channelMembers_.begin(), \
-					this->channelMembers_.end(), targetClient), this->channelMembers_.end());
 				codes.push_back(0);
 			}
 			else
@@ -276,7 +277,17 @@ std::vector<int>	Channel::kickMember(Client *client, const std::vector<std::stri
 	return (codes);
 }
 
-bool	Channel::isOperator(Client *client)
+int	Channel::topicChannel(Client *client, const std::string &topic)
+{
+	if (this->isOperator(client))
+	{
+		this->topic_ = topic;
+		return (0);
+	}
+	return (482);
+}
+
+bool	Channel::isOperator(Client *client) const
 {
 	for (size_t channelOperatorCnt = 0; channelOperatorCnt < this->channelOperator_.size(); channelOperatorCnt++)
 	{

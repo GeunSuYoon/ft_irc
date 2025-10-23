@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:39:56 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/16 09:31:36 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 14:56:15 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,35 @@
 
 # include "ft_irc_include.hpp"
 
-# define RPL_WELCOME(server, client, networkname, nick, user, host) ((":") + server + " 001 " + client + " :Welcome to the " + networkname + " Network, " + nick) //001
+// 001
+# define RPL_WELCOME(server, client, networkname, nick) ((":") + server + " 001 " + client + " :Welcome to the " + networkname + " Network, " + nick)
+// 002
+# define RPL_YOURHOST(server, client, version) ((":") + server + " 002 " + client + " :Your host is " + server + ", running version " + version)
+// 003
+// # define RPL_CREATED(server, client, datetime) ((":") + server + " 003 " + client + " :Your host is " + server + ", running version " + version) //001
 
-# define RPL_AWAY(server, client, nickname, msg) ((":") + server + " 301 " + client + " " + nickname + " :" + msg) //301
+// 301
+# define RPL_AWAY(server, client, nickname, msg) ((":") + server + " 301 " + client + " " + nickname + " :" + msg)
 
-# define RPL_NOTOPIC(server, client, channel) ((":") + server + " 331 " + client + " " + channel + " :No topic is set") //331
-# define RPL_TOPIC(server, client, channel, topic) ((":") + server + " 332 " + client + " " + channel + " :" + topic) //332
+// 331
+# define RPL_NOTOPIC(server, client, channel) ((":") + server + " 331 " + client + " " + channel + " :No topic is set")
+// 332
+# define RPL_TOPIC(server, client, channel, topic) ((":") + server + " 332 " + client + " " + channel + " :" + topic)
 
-# define RPL_INVITING(server, client, nickname, channel) ((":") + server + " 341 " + client + " " + nickname + " " + channel) //341
+// 341
+# define RPL_INVITING(server, client, nickname, channel) ((":") + server + " 341 " + client + " " + nickname + " :" + channel)
 
-# define RPL_MOTD(server, client, msg) ((":") + server + " 372 " + client + " :" + msg) //372
-# define RPL_MOTDSTART(server, client) ((":") + server + " 375 " + client + " :" + server + " message of the day") //375
-# define RPL_MOTDEND(server, client) ((":") + server + " 376 " + client + " :End of message of the day.") //376
+// 353
+# define RPL_NAMREPLY(server, client, channel, clientList) ((":") + server + " 353 " + client + " = " + channel + " :" + clientList)
+
+// 366
+# define RPL_ENDOFNAMES(server, client, channel) ((":") + server + " 366 " + client + " " + channel + " :End of /NAMES list")
+
+// 372
+# define RPL_MOTD(server, client, msg) ((":") + server + " 372 " + client + " :" + msg)
+// 375
+# define RPL_MOTDSTART(server, client) ((":") + server + " 375 " + client + " :" + server + " message of the day")
+// 376
+# define RPL_MOTDEND(server, client) ((":") + server + " 376 " + client + " :End of message of the day.")
 
 #endif

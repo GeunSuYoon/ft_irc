@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:43:31 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 14:23:32 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 14:31:48 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,6 @@ class	Client
 
 		void	sendMsg(const std::string &msg);
 
-		int		isValideNick(const std::string &nick);
-
 		bool	isCompleteMsg(void);
 		void	appendBuffer(const std::string &buffer, size_t bufSize);
 		void	clearCmd(void);
@@ -92,7 +90,7 @@ class	Client
 		void	joinChannel(Channel *channel);
 		void	leaveChannel(Channel *channel);
 
-		bool	commandNickValid(const std::string &nick);
+		int		isValideNick(const std::string &nick);
 
 };
 

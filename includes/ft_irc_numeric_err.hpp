@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:34:45 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/22 15:01:18 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 14:01:34 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@
 # define ERR_NOTEXTTOSEND(server, client) ((":") + server + " 412 " + client + " :No text to send") 
 
 // 421
-# define ERR_UNKNOWNCOMMAND_UNKOWNUSER(server, command) ((":") + server + " 421 * " + command + " :Unknown command") 
 # define ERR_UNKNOWNCOMMAND(server, client, command) ((":") + server + " 421 " + client + " " + command + " :Unknown command") 
 
 // 431
@@ -58,8 +57,8 @@
 // 473
 # define ERR_INVITEONLYCHAN(server, client, channel) ((":") + server + " 473 " + client + " " + channel + " :Cannot join channel (+i)")
 
-// 473
-# define ERR_BADCHANNELKEY(server, client, channel) ((":") + server + " 473 " + client + " " + channel + " :Cannot join channel (+k)")
+// 475
+# define ERR_BADCHANNELKEY(server, client, channel) ((":") + server + " 475 " + client + " " + channel + " :Cannot join channel (+k)")
 
 // 482
 # define ERR_CHANOPRIVSNEEDED(server, client, channel) ((":") + server + " 482 " + client + " " + channel + " :You're not channel operator") 

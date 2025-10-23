@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 21:37:50 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/20 14:56:10 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 12:11:58 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 # define TARGETMINTOPIC		1
 # define TARGETMINMODE		2
 # define TARGETMINNICK		1
-# define TARGETMINPRIVMSG	1
+# define TARGETMINPRIVMSG	2
 # define TARGETMINUSER		2
 # define TARGETMINPING		1
 # define TARGETMINPASS		1
@@ -50,7 +50,7 @@
 # define TARGETMAXTOPIC		2
 # define TARGETMAXMODE		3
 # define TARGETMAXNICK		1
-# define TARGETMAXPRIVMSG	5
+# define TARGETMAXPRIVMSG	2
 # define TARGETMAXUSER		4
 # define TARGETMAXPING		1
 # define TARGETMAXPASS		1
