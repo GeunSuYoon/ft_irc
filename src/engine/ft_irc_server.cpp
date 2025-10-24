@@ -6,9 +6,14 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 15:10:56 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 15:59:07 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+// TODO
+// Kick func fix
+// Topic func fix
+// Maybe invite func too
 
 #include "./ft_irc_server.hpp"
 
@@ -241,20 +246,19 @@ void	Server::acceptClient(void)
 	// client socket 초기화
 	if (clientSock == -1)
 	{
-		std::cerr << "Error: Client Cannot Accept" << std::endl;
-		return ;
+		throw (std::runtime_error("Error: Client Cannot Accept"));
 	}
 	if (fcntl(clientSock, F_SETFL, O_NONBLOCK) == -1)
 	{
-		std::cerr << "Error: Client Socket Cannot change Non-Blocking mode" << std::endl;
-		close(clientSock);
-		return ;
+		throw (std::runtime_error("Error: Client Socket Cannot change Non-Blocking mode"));
 	}
 
 	// client 및 client pollfd 초기화
 	Client			*client = new Client(clientSock);
 	struct pollfd	pfd;
 
+	if (!client)
+		throw (std::runtime_error("Error: Client init Fail"));
 	pfd.fd = clientSock;
 	pfd.events = POLLIN;
 	pfd.revents = 0;
@@ -279,11 +283,15 @@ void	Server::initClientConnect(Client *client)
 	client->sendMsg(RPL_MOTDEND(this->serverName_, client->getNickName()));
 }
 
-void	Server::initChannel(Client *client, const std::string &channelName)
+Channel	*Server::initChannel(Client *client, const std::string &channelName)
 {
 	Channel	*newChannel = new Channel(channelName, client);
 
+	if (!newChannel)
+		throw (std::runtime_error("Error: Channel init Fail"));
 	this->channels_.push_back(newChannel);
+	client->joinChannel(newChannel);
+	return (newChannel);
 }
 
 void	Server::commandParsor(Client *client, const std::string& msg)
@@ -429,46 +437,45 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 }
 void	Server::commandKick(Client *client, const std::vector<std::string> &args)
 {
-	std::string					targetChannelName(args[1]);
-	Channel						*targetChannel = this->findChannel(targetChannelName);
-	std::vector<std::string>	kickMsg;
-	std::string					msg;
+	// 목표 채널 및 클라이언트 유효성 검사
+	std::string	targetChannelName(args[1]);
+	Channel		*targetChannel = this->findChannel(targetChannelName);
 
-	// 해당 채널 없으면 에러
 	if (!targetChannel)
 	{
-		client->sendMsg(ERR_NOSUCHNICK(this->serverName_, client->getNickName(), targetChannelName));
+		client->sendMsg(ERR_NOSUCHCHANNEL(this->serverName_, client->getNickName(), targetChannelName));
+		return ;
 	}
 
-	// 있으면 쭉 돌면서 해당하는 클라이언트 밴 혹은 오류메시지
-	std::vector<int>	codes = targetChannel->kickMember(client, args);
+	std::string	targetClientName(args[2]);
+	Client		*targetClient = this->findClient(targetClientName);
 
-	for (size_t codeCnt = 0; codeCnt < codes.size(); codeCnt++)
+	if (!targetClient)
 	{
-		switch (codes[codeCnt])
-		{
-			case (0):
-			{
-				if (codeCnt)
-				{
-					Client	*targetClient = this->findClient(args[codeCnt]);
+		client->sendMsg(ERR_NOSUCHNICK(this->serverName_, client->getNickName(), targetClientName));
+		return ;
+	}
+	// 있으면 해당하는 클라이언트 밴 혹은 오류메시지
+	int	codes = targetChannel->kickMember(client, targetClient);
 
-					if (args[args.size() - 1][0] == ':')
-						msg = client->getSendString() + " " + args[0] + " " + args[codeCnt] + args[args.size() - 1];
-					else
-						msg = client->getSendString() + " " + args[0] + " " + args[codeCnt];
-					this->broadcastChannel(targetChannel, msg, client, true);
-					targetClient->leaveChannel(targetChannel);
-					targetChannel->removeChannelMember(targetClient);
-				}
-				break ;
-			}
-			default:
-			{
-				this->sendMsgClient(client, client->getNickName(), targetChannelName, args[0], args[codeCnt], codes[codeCnt]);
-			}
+	switch (codes)
+	{
+		case (0):
+		{
+			std::string	msg = client->getSendString() + " " + client->getCmd();
+			
+			this->broadcastChannel(targetChannel, msg, client, true);
+			targetClient->leaveChannel(targetChannel);
+			targetChannel->removeChannelMember(targetClient);
+			return ;
+		}
+		default:
+		{
+			this->sendMsgClient(client, client->getNickName(), targetChannelName, args[0], targetClientName, codes);
+			return ;
 		}
 	}
+
 }
 
 void	Server::commandInvite(Client *client, const std::vector<std::string> &args)
@@ -498,7 +505,7 @@ void	Server::commandInvite(Client *client, const std::vector<std::string> &args)
 	{
 		case (0):
 		{
-			std::string	msg = client->getSendString() + " " + args[1] + " " + targetClientName + " :" + targetChannelName;
+			std::string	msg = client->getSendString() + " " + args[0] + " " + targetClientName + " :" + targetChannelName;
 			
 			this->broadcastChannel(targetChannel, msg, client, false);
 			targetClient->joinChannel(targetChannel);
@@ -510,9 +517,6 @@ void	Server::commandInvite(Client *client, const std::vector<std::string> &args)
 		default:
 		{
 			this->sendMsgClient(client, client->getNickName(), targetChannelName, args[0], targetClientName, code);
-			client->sendMsg(ERR_USERONCHANNEL(this->serverName_, client->getNickName(), targetClientName, targetChannelName));
-			return ;
-			client->sendMsg(ERR_CHANOPRIVSNEEDED(this->serverName_, client->getNickName(), targetClientName));
 			return ;
 		}
 	}
@@ -586,19 +590,12 @@ void	Server::commandMode(Client *client, const std::vector<std::string> &args)
 			std::string	msg = client->getSendString() + " " + client->getCmd();
 			
 			this->broadcastChannel(targetChannel, msg, client, true);
-			// if (static_cast<int>(args.size()) == this->targetMin_[args[0]] + 1)
-			// 	this->broadcastChannel(targetChannel, MODEMSG(this->serverName_, targetChannel->getChannelName(), args[2]), client, true);
-			// else
-			// 	this->broadcastChannel(targetChannel, MODEMSGPARAM(this->serverName_, targetChannel->getChannelName(), args[2], args[3]), client, true);
 			return ;
 		}
 		default:
 		{
 			this->sendMsgClient(client, client->getNickName(), targetChannelName, args[0], "", code);
 			return ;
-			// client->sendMsg(ERR_UMODEUNKNOWNFLAG(this->serverName_, client->getNickName()));
-			// client->sendMsg(ERR_CHANOPRIVSNEEDED(this->serverName_, client->getNickName(), targetChannel->getChannelName()));
-			// client->sendMsg(ERR_NEEDMOREPARAMS(this->serverName_, client->getNickName(), targetChannel->getChannelName()));
 		}
 	}
 }
@@ -612,11 +609,6 @@ void	Server::commandPrivmsg(Client *client, const std::vector<std::string> &args
 	if (args[args.size() - 1][0] != ':')
 	{
 		client->sendMsg(ERR_NOTEXTTOSEND(this->serverName_, client->getNickName()));
-		return ;
-	}
-	if (static_cast<int>(args.size()) == this->getTargetMinCommand(cmd) + 1)
-	{
-		client->sendMsg(ERR_NORECIPIENT(this->serverName_, client->getNickName(), cmd));
 		return ;
 	}
 	if (this->channelPrefix_.find(recip[0]) != std::string::npos)
@@ -671,7 +663,16 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 			client->sendMsg(ERR_NOTREGISTERED(this->getServerName(), args[0]));
 	}
 	else if (!targetChannel)
-		initChannel(client, targetChannelName);
+	{
+		const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
+		
+		targetChannel = initChannel(client, targetChannelName);
+		client->sendMsg(msg);
+		if (targetChannel->getTopic().size())
+			client->sendMsg(RPL_TOPIC(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getTopic()));
+		client->sendMsg(RPL_NAMREPLY(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getChannelMembersName()));
+		client->sendMsg(RPL_ENDOFNAMES(this->serverName_, client->getNickName(), targetChannelName));
+	}
 	else
 	{
 		if (targetChannel->getModeInviteOnly() && !targetChannel->findTargetClient(client->getNickName()))

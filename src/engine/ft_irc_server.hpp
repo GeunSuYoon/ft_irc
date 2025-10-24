@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:32:01 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 14:00:08 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 15:27:48 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ class	Server
 		void	acceptClient(void);
 
 		void	initClientConnect(Client *client);
-		void	initChannel(Client *client, const std::string &channelName);
+		Channel	*initChannel(Client *client, const std::string &channelName);
 
 		void	commandParsor(Client *client, const std::string& msg);
 		void	commandKick(Client *client, const std::vector<std::string> &args);

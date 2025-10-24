@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 09:18:18 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 15:13:50 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 15:50:46 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,35 +253,33 @@ int	Channel::inviteMember(Client *client, Client *targetClient)
 	return (482);
 }
 
-std::vector<int>	Channel::kickMember(Client *client, const std::vector<std::string> &args)
+int	Channel::kickMember(Client *client, Client *targetClient)
 {
-	std::vector<int>	codes;
-
 	if (this->isOperator(client))
 	{
-		codes.push_back(0);
-		for (size_t argCnt = 2; argCnt < args.size(); argCnt++)
+		if (this->findTargetClient(targetClient->getNickName()))
 		{
-			Client	*targetClient = this->findTargetClient(args[argCnt]);
-
-			if (targetClient)
-			{
-				codes.push_back(0);
-			}
-			else
-				codes.push_back(442);
+			return (0);
+		}
+		else
+		{
+			return (442);
 		}
 	}
 	else
-		codes.push_back(482);
-	return (codes);
+		return (482);
 }
 
 int	Channel::topicChannel(Client *client, const std::string &topic)
 {
 	if (this->isOperator(client))
 	{
-		this->topic_ = topic;
+		if (topic[0] == ':')
+		{
+			this->topic_ = topic.substr(1, topic.size());
+		}
+		else
+			this->topic_ = topic;
 		return (0);
 	}
 	return (482);

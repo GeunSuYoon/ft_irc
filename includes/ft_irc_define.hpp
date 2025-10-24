@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 21:37:50 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 12:11:58 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/23 15:35:04 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 # define COMMAND_QUIT		"QUIT"
 # define COMMAND_CAP		"CAP"
 // targetmin parameter
-# define TARGETMINKICK		2
+# define TARGETMINKICK		3
 # define TARGETMININVITE	2
 # define TARGETMINTOPIC		1
 # define TARGETMINMODE		2
@@ -45,7 +45,7 @@
 # define TARGETMINQUIT		0
 # define TARGETMINCAP		-1
 // targetmax parameter
-# define TARGETMAXKICK		5
+# define TARGETMAXKICK		3
 # define TARGETMAXINVITE	2
 # define TARGETMAXTOPIC		2
 # define TARGETMAXMODE		3
