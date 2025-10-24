@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 09:18:18 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 15:50:46 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 10:18:28 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,6 +179,8 @@ int	Channel::modeChannel(Client *client, const std::vector<std::string> &args)
 					}
 					case (static_cast<int>('o')):
 					{
+						if (args.size() < 4)
+							return (461);
 						Client	*targetClient = this->findTargetClient(args[3]);
 						
 						if (!targetClient)
@@ -189,8 +191,7 @@ int	Channel::modeChannel(Client *client, const std::vector<std::string> &args)
 					case (static_cast<int>('l')):
 						if (args.size() < 4)
 							return (461);
-						else
-							this->userLimit_ = atoi(args[3].c_str());	
+						this->userLimit_ = atoi(args[3].c_str());	
 						return (0);
 					
 					default:
@@ -218,6 +219,8 @@ int	Channel::modeChannel(Client *client, const std::vector<std::string> &args)
 					}
 					case (static_cast<int>('o')):
 					{
+						if (args.size() < 4)
+							return (461);
 						Client	*targetClient = this->findTargetClient(args[3]);
 						
 						if (!targetClient)
@@ -241,6 +244,23 @@ int	Channel::modeChannel(Client *client, const std::vector<std::string> &args)
 	return (482);
 }
 
+int	Channel::joinChannel(Client *client, const std::vector<std::string> &args)
+{
+	if (this->userLimit_ && (this->userLimit_ == this->channelMembers_.size()))
+	{
+		return (471);
+	}
+	if (this->modeInviteOnly_ && !this->findTargetClient(client->getNickName()))
+	{
+		return (473);
+	}
+	if (this->password_.size() && (args.size() != 3 || this->password_ != args[2]))
+	{
+		return (475);
+	}
+	return (0);
+}
+
 int	Channel::inviteMember(Client *client, Client *targetClient)
 {
 	// check if client is already in this channel
@@ -255,25 +275,29 @@ int	Channel::inviteMember(Client *client, Client *targetClient)
 
 int	Channel::kickMember(Client *client, Client *targetClient)
 {
-	if (this->isOperator(client))
+	if (this->findTargetClient(client->getNickName()))
 	{
-		if (this->findTargetClient(targetClient->getNickName()))
+		if (this->isOperator(client))
 		{
-			return (0);
-		}
-		else
-		{
+			if (this->findTargetClient(targetClient->getNickName()))
+			{
+				return (0);
+			}
 			return (442);
 		}
-	}
-	else
 		return (482);
+	}
+	return (441);
 }
 
 int	Channel::topicChannel(Client *client, const std::string &topic)
 {
-	if (this->isOperator(client))
+	if (this->findTargetClient(client->getNickName()))
 	{
+		if (this->modeTopicOperator && !this->isOperator(client))
+		{
+			return (482);
+		}
 		if (topic[0] == ':')
 		{
 			this->topic_ = topic.substr(1, topic.size());
@@ -282,7 +306,7 @@ int	Channel::topicChannel(Client *client, const std::string &topic)
 			this->topic_ = topic;
 		return (0);
 	}
-	return (482);
+	return (442);
 }
 
 bool	Channel::isOperator(Client *client) const

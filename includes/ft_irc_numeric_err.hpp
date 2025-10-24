@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:34:45 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 14:01:34 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 10:07:12 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@
 // 433
 # define ERR_NICKNAMEINUSE(server, client, nick) ((":") + server + " 433 " + client + " " + nick + " :Nickname is already in use") 
 
+// 441
+# define ERR_USERNOTINCHANNEL(server, client, channel, nick) ((":") + server + " 441 " + client + " " + nick + " " + channel + " :They aren't on that channel") 
 // 442
 # define ERR_NOTONCHANNEL(server, client, channel) ((":") + server + " 442 " + client + " " + channel + " :You're not on that channel") 
 // 443
@@ -54,9 +56,10 @@
 // 464
 # define ERR_PASSWDMISMATCH(server, client) ((":") + server + " 464 " + client + " :Password incorrect") 
 
+// 471
+# define ERR_CHANNELISFULL(server, client, channel) ((":") + server + " 471 " + client + " " + channel + " :Cannot join channel (+l)")
 // 473
 # define ERR_INVITEONLYCHAN(server, client, channel) ((":") + server + " 473 " + client + " " + channel + " :Cannot join channel (+i)")
-
 // 475
 # define ERR_BADCHANNELKEY(server, client, channel) ((":") + server + " 475 " + client + " " + channel + " :Cannot join channel (+k)")
 

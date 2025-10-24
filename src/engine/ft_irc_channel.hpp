@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 08:31:59 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 15:37:08 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 10:10:43 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ class	Channel
 
 		int	partChannelMember(Client *client);
 		int	modeChannel(Client *client, const std::vector<std::string> &args);
+		int	joinChannel(Client *client, const std::vector<std::string> &args);
 		// client function
 		int	inviteMember(Client *client, Client *targetClient);
 		int	kickMember(Client *client, Client *targetClient);

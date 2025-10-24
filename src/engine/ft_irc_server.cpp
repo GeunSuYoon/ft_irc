@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 09:53:32 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 10:15:36 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -676,26 +676,56 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 	}
 	else
 	{
-		if (targetChannel->getModeInviteOnly() && !targetChannel->findTargetClient(client->getNickName()))
-		{
-			client->sendMsg(ERR_INVITEONLYCHAN(this->serverName_, client->getNickName(), targetChannel->getChannelName()));	
-			return ;
-		}
-		if (targetChannel->getPassword().size() && (args.size() != 3 || targetChannel->getPassword() != args[2]))
-		{
-			client->sendMsg(ERR_BADCHANNELKEY(this->serverName_, client->getNickName(), targetChannel->getChannelName()));
-			return ;
-		}
-		const std::string	&msg = client->getSendString() + " " + client->getCmd();
+		int	code = targetChannel->joinChannel(client, args);
 
-		client->sendMsg(msg);
-		targetChannel->addChannelMember(client);
-		client->joinChannel(targetChannel);
-		if (targetChannel->getTopic().size())
-			client->sendMsg(RPL_TOPIC(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getTopic()));
-		client->sendMsg(RPL_NAMREPLY(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getChannelMembersName()));
-		client->sendMsg(RPL_ENDOFNAMES(this->serverName_, client->getNickName(), targetChannelName));
-		this->broadcastChannel(targetChannel, msg, client, false);
+		switch (code)
+		{
+			case (0):
+			{
+				const std::string	&msg = client->getSendString() + " " + client->getCmd();
+
+				client->sendMsg(msg);
+				targetChannel->addChannelMember(client);
+				client->joinChannel(targetChannel);
+				if (targetChannel->getTopic().size())
+					client->sendMsg(RPL_TOPIC(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getTopic()));
+				client->sendMsg(RPL_NAMREPLY(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getChannelMembersName()));
+				client->sendMsg(RPL_ENDOFNAMES(this->serverName_, client->getNickName(), targetChannelName));
+				this->broadcastChannel(targetChannel, msg, client, false);
+				return ;
+			}
+			
+			default:
+			{
+				this->sendMsgClient(client, client->getNickName(), targetChannelName, args[0], "", code);
+				return ;
+			}
+		}
+		// if (targetChannel->getUserLimit() && (targetChannel->getUserLimit() == targetChannel->getChannelMembers().size()))
+		// {
+		// 	client->sendMsg(ERR_CHANNELISFULL(this->serverName_, client->getNickName(), targetChannelName));
+		// 	return ;
+		// }
+		// if (targetChannel->getModeInviteOnly() && !targetChannel->findTargetClient(client->getNickName()))
+		// {
+		// 	client->sendMsg(ERR_INVITEONLYCHAN(this->serverName_, client->getNickName(), targetChannelName));	
+		// 	return ;
+		// }
+		// if (targetChannel->getPassword().size() && (args.size() != 3 || targetChannel->getPassword() != args[2]))
+		// {
+		// 	client->sendMsg(ERR_BADCHANNELKEY(this->serverName_, client->getNickName(), targetChannelName));
+		// 	return ;
+		// }
+		// const std::string	&msg = client->getSendString() + " " + client->getCmd();
+
+		// client->sendMsg(msg);
+		// targetChannel->addChannelMember(client);
+		// client->joinChannel(targetChannel);
+		// if (targetChannel->getTopic().size())
+		// 	client->sendMsg(RPL_TOPIC(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getTopic()));
+		// client->sendMsg(RPL_NAMREPLY(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getChannelMembersName()));
+		// client->sendMsg(RPL_ENDOFNAMES(this->serverName_, client->getNickName(), targetChannelName));
+		// this->broadcastChannel(targetChannel, msg, client, false);
 	}
 }
 
@@ -966,6 +996,12 @@ void	Server::sendMsgClient(Client *client, const std::string &clientName, const 
 			break;
 		}
 		
+		case (441):
+		{
+			client->sendMsg(ERR_USERNOTINCHANNEL(this->serverName_, clientName, channelName, arg));
+			break;
+		}
+
 		case (442):
 		{
 			client->sendMsg(ERR_NOTONCHANNEL(this->serverName_, clientName, channelName));
@@ -999,6 +1035,12 @@ void	Server::sendMsgClient(Client *client, const std::string &clientName, const 
 		case (464):
 		{
 			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, clientName));
+			break;
+		}
+		
+		case (471):
+		{
+			client->sendMsg(ERR_CHANNELISFULL(this->serverName_, clientName, channelName));
 			break;
 		}
 		
