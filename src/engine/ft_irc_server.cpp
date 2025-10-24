@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 09:48:35 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 09:53:32 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,7 @@ void	Server::initServer(void)
 
 void	Server::runServer(void)
 {
+	std::cout << "Server start" << std::endl;
 	// 무언가 입력이 들어올 때까지 대기
 	while (poll(this->fds_.data(), this->fds_.size(), -1))
 	{
@@ -217,9 +218,9 @@ void	Server::runServer(void)
 						// CRLF 기준으로 자르면서 cmd 실행
 						while (targetClient && targetClient->isCompleteMsg())
 						{
-							std::cout << "Before buffer [" << targetClient->getCmd() << "]" << std::endl;
+							// std::cout << "Before buffer [" << targetClient->getCmd() << "]" << std::endl;
 							this->commandParsor(targetClient, targetClient->getCmd());
-							std::cout << "Finish cmd" << std::endl;
+							// std::cout << "Finish cmd" << std::endl;
 							// cmd 실행 도중 client가 없어졌을 가능성이 존재하므로 fd 기준으로 다시 갱신
 							targetClient = this->findClientFd(targetClientFd);
 							if (targetClient)
