@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 13:33:11 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:43:24 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -398,7 +398,12 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 			if (client->getNickName().size())
 				this->sendMsgClient(client, client->getNickName(), "", "", "", code);
 			else
+			{
 				this->sendMsgClient(client, "*", "", "", "", code);
+				this->clients_.erase(std::remove(this->clients_.begin(), \
+					this->clients_.end(), client), this->clients_.end());
+				delete (client);
+			}
 			return ;
 		}
 	}
@@ -471,6 +476,11 @@ void	Server::commandKick(Client *client, const std::vector<std::string> &args)
 	}
 	// 목표 채널 및 클라이언트 유효성 검사
 	std::string	targetChannelName(args[1]);
+	if (targetChannelName.size() > CHANNELLEN)
+	{
+		client->sendMsg(ERR_BADCHANMASK(this->serverName_, client->getNickName(), targetChannelName));
+		return ;
+	}
 	Channel		*targetChannel = this->findChannel(targetChannelName);
 
 	if (!targetChannel)
@@ -1138,6 +1148,12 @@ void	Server::sendMsgClient(Client *client, const std::string &clientName, const 
 		case (475):
 		{
 			client->sendMsg(ERR_BADCHANNELKEY(this->serverName_, clientName, channelName));
+			break;
+		}
+		
+		case (476):
+		{
+			client->sendMsg(ERR_BADCHANMASK(this->serverName_, clientName, channelName));
 			break;
 		}
 		
