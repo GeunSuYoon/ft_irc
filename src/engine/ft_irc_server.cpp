@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 12:00:55 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 12:30:21 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,6 +297,8 @@ Channel	*Server::initChannel(Client *client, const std::string &channelName)
 
 void	Server::commandParsor(Client *client, const std::string& msg)
 {
+	if (!msg.size())
+		return ;
 	std::vector<std::string>	args = tokenizeLine(msg);
 	std::string					cmd(args[0]);
 
@@ -322,6 +324,13 @@ void	Server::commandParsor(Client *client, const std::string& msg)
 
 void	Server::commandPass(Client *client, const std::vector<std::string> &args)
 {
+	if (client->getIsRegister())
+	{
+		client->sendMsg(ERR_ALREADYREGISTERED(this->serverName_, client->getNickName()));
+		return ;
+	}
+	if (client->getIsPass())
+		return ;
 	// 입력한 비밀번호 맞는지 확인
 	if (this->password_ != args[1])
 	{
