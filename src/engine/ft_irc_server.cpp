@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 13:58:25 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 14:06:03 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -399,10 +399,20 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 				this->sendMsgClient(client, client->getNickName(), "", "", "", code);
 			else
 			{
+				int	clientFd = client->getFd();
+				
 				this->sendMsgClient(client, "*", "", "", "", code);
 				this->clients_.erase(std::remove(this->clients_.begin(), \
 					this->clients_.end(), client), this->clients_.end());
 				delete (client);
+				for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
+				{
+					if (it->fd == clientFd)
+					{
+						this->fds_.erase(it);
+						break;
+					}
+				}
 			}
 			return ;
 		}
