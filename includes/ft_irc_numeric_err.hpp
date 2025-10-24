@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:34:45 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 13:26:50 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:58:14 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@
 
 // 501
 # define ERR_UMODEUNKNOWNFLAG(server, client) ((":") + server + " 501 " + client + " :Unknown MODE flag") 
+// 502
+# define ERR_USERSDONTMATCH(server, client) ((":") + server + " 502 " + client + " :Cant change mode for other users") 
 
 // # define ERR_INVALIDMODEPARAM(client, channel, mode)
 

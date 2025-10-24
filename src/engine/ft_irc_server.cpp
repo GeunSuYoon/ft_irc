@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 13:43:24 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:58:25 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -662,6 +662,16 @@ void	Server::commandMode(Client *client, const std::vector<std::string> &args)
 
 	if (this->findClient(targetChannelName))
 	{
+		if (targetChannelName != client->getNickName())
+		{
+			client->sendMsg(ERR_USERSDONTMATCH(this->serverName_, client->getNickName()));
+			return ;
+		}
+		else if (args[2] != "+i" || args[2] != "-i")
+		{
+			client->sendMsg(ERR_UMODEUNKNOWNFLAG(this->serverName_, client->getNickName()));
+			return ;
+		}
 		std::string	msg = client->getSendString() + " " + client->getCmd();
 
 		client->sendMsg(msg);
