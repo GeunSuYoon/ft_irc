@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 13:22:04 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:33:11 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ const std::string	Server::commandList_[commandSize] = {
 // }
 
 Server::Server(char **argv)
-	: port_(atoi(argv[0])), password_(argv[1]), serverName_("GeuIrc"), version_("1.0"), usermod_("i"), chanmod_("itkol"), tokens_("CHANNELLEN=16 NICKLEN=8 TOPICLEN=32")
+	: port_(atoi(argv[0])), password_(argv[1]), serverName_("GeuIrc"), version_("1.0"), usermod_("i"), chanmod_("itkol"), tokens_("CHANNELLEN=16 NICKLEN=8")
 {
 	std::time_t	serverCreateTime = std::time(NULL);
 	std::tm		*time = std::localtime(&serverCreateTime);
@@ -531,6 +531,11 @@ void	Server::commandInvite(Client *client, const std::vector<std::string> &args)
 	}
 
 	std::string	targetChannelName(args[2]);
+	if (targetChannelName.size() > CHANNELLEN)
+	{
+		client->sendMsg(ERR_BADCHANMASK(this->serverName_, client->getNickName(), targetChannelName));
+		return ;
+	}
 	Channel		*targetChannel = this->findChannel(targetChannelName);
 
 	if (!targetChannel)
@@ -573,6 +578,11 @@ void	Server::commandTopic(Client *client, const std::vector<std::string> &args)
 		return ;
 	}
 	std::string	targetChannelName(args[1]);
+	if (targetChannelName.size() > CHANNELLEN)
+	{
+		client->sendMsg(ERR_BADCHANMASK(this->serverName_, client->getNickName(), targetChannelName));
+		return ;
+	}
 	Channel		*targetChannel = this->findChannel(targetChannelName);
 
 	if (!targetChannel)
@@ -633,10 +643,18 @@ void	Server::commandMode(Client *client, const std::vector<std::string> &args)
 		return ;
 	}
 	std::string	targetChannelName(args[1]);
+	if (targetChannelName.size() > CHANNELLEN)
+	{
+		client->sendMsg(ERR_BADCHANMASK(this->serverName_, client->getNickName(), targetChannelName));
+		return ;
+	}
 	Channel		*targetChannel = this->findChannel(targetChannelName);
 
 	if (this->findClient(targetChannelName))
 	{
+		std::string	msg = client->getSendString() + " " + client->getCmd();
+
+		client->sendMsg(msg);
 		return ;
 	}
 	if (!targetChannel)
@@ -731,6 +749,11 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 		return ;
 	}
 	std::string	targetChannelName(args[1]);
+	if (targetChannelName.size() > CHANNELLEN)
+	{
+		client->sendMsg(ERR_BADCHANMASK(this->serverName_, client->getNickName(), targetChannelName));
+		return ;
+	}
 	Channel		*targetChannel = this->findChannel(targetChannelName);
 
 	if (targetChannelName[0] == ':')
@@ -790,6 +813,11 @@ void	Server::commandPart(Client *client, const std::vector<std::string> &args)
 	}
 	const std::string	&msg = client->getSendString() + " " + client->getCmd();
 	const std::string	&targetChannelName(args[1]);
+	if (targetChannelName.size() > CHANNELLEN)
+	{
+		client->sendMsg(ERR_BADCHANMASK(this->serverName_, client->getNickName(), targetChannelName));
+		return ;
+	}
 	Channel				*targetChannel = this->findChannel(targetChannelName);
 
 	if (targetChannel)

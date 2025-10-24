@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 09:11:48 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 09:47:53 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:24:00 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,7 +198,8 @@ int	Client::isValideNick(const std::string &nick)
 	if (!nick.size())
 		return (431);
 	if (invalNickStartChar_.find(nick[0]) != std::string::npos || \
-		nick.find_first_of(invalNickChar_) != std::string::npos)
+		nick.find_first_of(invalNickChar_) != std::string::npos || \
+		nick.size() > NICKLEN)
 		return (432);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:34:45 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 11:57:13 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:26:50 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@
 # define ERR_INVITEONLYCHAN(server, client, channel) ((":") + server + " 473 " + client + " " + channel + " :Cannot join channel (+i)")
 // 475
 # define ERR_BADCHANNELKEY(server, client, channel) ((":") + server + " 475 " + client + " " + channel + " :Cannot join channel (+k)")
+// 476
+# define ERR_BADCHANMASK(server, client, channel) ((":") + server + " 476 " + client + " " + channel + " :Bad Channel Mask")
 
 // 482
 # define ERR_CHANOPRIVSNEEDED(server, client, channel) ((":") + server + " 482 " + client + " " + channel + " :You're not channel operator") 
