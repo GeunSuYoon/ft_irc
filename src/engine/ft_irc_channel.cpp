@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 09:18:18 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 10:18:28 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 11:37:48 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,7 +230,7 @@ int	Channel::modeChannel(Client *client, const std::vector<std::string> &args)
 					}
 					case (static_cast<int>('l')):
 					{
-						this->userLimit_ = 0;	
+						this->userLimit_ = 0;
 						return (0);
 					}
 					default:
@@ -246,7 +246,7 @@ int	Channel::modeChannel(Client *client, const std::vector<std::string> &args)
 
 int	Channel::joinChannel(Client *client, const std::vector<std::string> &args)
 {
-	if (this->userLimit_ && (this->userLimit_ == this->channelMembers_.size()))
+	if (this->userLimit_ && (this->userLimit_ == static_cast<int>(this->channelMembers_.size())))
 	{
 		return (471);
 	}
@@ -300,7 +300,10 @@ int	Channel::topicChannel(Client *client, const std::string &topic)
 		}
 		if (topic[0] == ':')
 		{
-			this->topic_ = topic.substr(1, topic.size());
+			if (topic.size() != 1)
+				this->topic_ = topic.substr(1, topic.size());
+			else
+				this->topic_.clear();
 		}
 		else
 			this->topic_ = topic;

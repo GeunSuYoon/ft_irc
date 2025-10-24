@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:34:45 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 10:07:12 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 11:57:13 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 # define ERR_NOSUCHNICK(server, client, nickname) ((":") + server + " 401 " + client + " " + nickname + ":No such nick") 
 // 403
 # define ERR_NOSUCHCHANNEL(server, client, channel) ((":") + server + " 403 " + client + " " + channel + " :No such channel") 
+// 404
+# define ERR_CANNOTSENDTOCHAN(server, client, channel) ((":") + server + " 404 " + client + " " + channel + " :Cannot send to channel") 
 // 407
 # define ERR_TOOMANYTARGETS(server, client) ((":") + server + " 407 " + client + " :Too many targets") 
 
@@ -47,7 +49,7 @@
 # define ERR_USERONCHANNEL(server, client, nickname, channel) ((":") + server + " 443 " + client + " " + nickname + " " + channel + ":is already on channel") 
 
 // 451
-# define ERR_NOTREGISTERED(server, command) ((":") + server + " 451 * " + command + " :You have not registered")
+# define ERR_NOTREGISTERED(server, client, command) ((":") + server + " 451 " + client + " " + command + " :You have not registered")
 
 // 461
 # define ERR_NEEDMOREPARAMS(server, client, command) ((":") + server + " 461 " + client + " " + command + " :Not enough parameters") 
