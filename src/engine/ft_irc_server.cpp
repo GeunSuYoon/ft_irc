@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 12:30:21 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:22:04 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,22 @@ const std::string	Server::commandList_[commandSize] = {
 	COMMAND_CAP
 };
 
+// std::string	Server::getServerCreateTime(void) const
+// {
+// 	char	buf[20];
+// 	std::tm	*time = std::localtime(&(this->serverCreateTime_));
+
+// 	std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", time);
+// 	return (buf);
+// }
+
 Server::Server(char **argv)
-	: port_(atoi(argv[0])), password_(argv[1]), serverName_("GeuIrc")
+	: port_(atoi(argv[0])), password_(argv[1]), serverName_("GeuIrc"), version_("1.0"), usermod_("i"), chanmod_("itkol"), tokens_("CHANNELLEN=16 NICKLEN=8 TOPICLEN=32")
 {
+	std::time_t	serverCreateTime = std::time(NULL);
+	std::tm		*time = std::localtime(&serverCreateTime);
+	std::strftime(this->serverCreateTime_, sizeof(this->serverCreateTime_), "%Y-%m-%d %H:%M:%S", time);
+
 	if (this->port_ < 1 || this->port_ > 65535)
 		throw std::out_of_range("Error: Port number is Invalid");
 	this->serverSock_ = socket(AF_INET, SOCK_STREAM, 0);
@@ -274,7 +287,10 @@ void	Server::initClientConnect(Client *client)
 {
 	// 첫 연결 시 motd 보내기
 	client->sendMsg(RPL_WELCOME(this->serverName_, client->getNickName(), this->serverName_, client->getSendString()));
-	client->sendMsg(RPL_YOURHOST(this->serverName_, client->getNickName(), "GeuIrc-1.0"));
+	client->sendMsg(RPL_YOURHOST(this->serverName_, client->getNickName(), this->version_));
+	client->sendMsg(RPL_CREATED(this->serverName_, client->getNickName(), this->serverCreateTime_));
+	client->sendMsg(RPL_MYINFO(this->serverName_, client->getNickName(), this->version_, this->usermod_, this->chanmod_));
+	client->sendMsg(RPL_ISUPPORT(this->serverName_, client->getNickName(), this->tokens_));
 	client->sendMsg(RPL_MOTDSTART(this->serverName_, client->getNickName()));
 	client->sendMsg(RPL_MOTD(this->serverName_, client->getNickName(), "**************************************************"));
 	client->sendMsg(RPL_MOTD(this->serverName_, client->getNickName(), "*             H    E    L    L    O              *"));
@@ -381,10 +397,8 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 		{
 			if (client->getNickName().size())
 				this->sendMsgClient(client, client->getNickName(), "", "", "", code);
-				// client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, client->getNickName()));
 			else
 				this->sendMsgClient(client, "*", "", "", "", code);
-				// client->sendMsg(ERR_NONICKNAMEGIVEN(this->serverName_, "*"));
 			return ;
 		}
 	}
@@ -409,11 +423,11 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 	if (!client->getIsPass())
 	{
 		if (client->getNickName().size())
-			this->sendMsgClient(client, client->getNickName(), "", "", "", 464);
-			// client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
+			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
+			// this->sendMsgClient(client, client->getNickName(), "", "", "", 464);
 		else
-			this->sendMsgClient(client, "*", "", "", "", 464);
-			// client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, "*"));
+			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, "*"));
+			// this->sendMsgClient(client, "*", "", "", "", 464);
 		return ;
 	}
 	// 입력이 제대로 들어왔으면 적절한 행동
@@ -442,8 +456,8 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 		}
 	}
 	else
-		this->sendMsgClient(client, client->getNickName(), "", COMMAND_USER, "", 464);
-		// client->sendMsg(ERR_NEEDMOREPARAMS(this->serverName_, client->getNickName(), COMMAND_USER));
+		client->sendMsg(ERR_NEEDMOREPARAMS(this->serverName_, client->getNickName(), COMMAND_USER));
+		// this->sendMsgClient(client, client->getNickName(), "", COMMAND_USER, "", 464);
 }
 void	Server::commandKick(Client *client, const std::vector<std::string> &args)
 {

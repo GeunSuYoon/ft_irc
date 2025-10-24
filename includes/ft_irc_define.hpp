@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 21:37:50 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 15:35:04 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:20:57 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 # define FT_IRC_DEFINE_H
 
 # define MAX_BUF_SIZE		1024
+# define CHANNELLEN			16
+# define NICKLEN			8
+# define TOPICLEN			32
 
 # define CRLF "\r\n"
 // Commands

@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:32:01 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 15:27:48 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:20:14 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,12 @@ class	Server
 
 		std::map<std::string, int>	targetMin_;
 		std::map<std::string, int>	targetMax_;
+
+		char						serverCreateTime_[20];
+		std::string					version_;
+		std::string					usermod_;
+		std::string					chanmod_;
+		std::string					tokens_;
 
 		void	setPort_(int port);
 		void	setServerFd_(int fd);
@@ -94,6 +100,8 @@ class	Server
 		void	sendMsgClient(Client *client, const std::string &clientName, const std::string &channelName, \
 			const std::string &cmd, const std::string &arg, int code);
 		void	broadcastChannel(Channel *channel, const std::string &msg, Client *client, bool clientSend);
+		
+		// std::string	getServerCreateTime(void) const;
 	public:
 		Server(char **argv);
 		~Server(void);

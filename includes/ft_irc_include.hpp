@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 21:37:35 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/16 10:46:57 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 12:41:01 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,6 @@
 # include <algorithm>
 # include <cerrno>
 # include <cstring>
+# include <ctime>
 
 #endif

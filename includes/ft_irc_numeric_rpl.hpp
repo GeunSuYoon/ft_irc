@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:39:56 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 14:56:15 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 13:17:04 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,11 @@
 // 002
 # define RPL_YOURHOST(server, client, version) ((":") + server + " 002 " + client + " :Your host is " + server + ", running version " + version)
 // 003
-// # define RPL_CREATED(server, client, datetime) ((":") + server + " 003 " + client + " :Your host is " + server + ", running version " + version) //001
+# define RPL_CREATED(server, client, datetime) ((":") + server + " 003 " + client + " This server was created " + datetime)
+// 004
+# define RPL_MYINFO(server, client, version, usermod, channmod) ((":") + server + " 004 " + client + server + version + usermod + channmod)
+// 005
+# define RPL_ISUPPORT(server, client, tokens) ((":") + server + " 005 " + client + " " + tokens + " :are supported by this server")
 
 // 301
 # define RPL_AWAY(server, client, nickname, msg) ((":") + server + " 301 " + client + " " + nickname + " :" + msg)
