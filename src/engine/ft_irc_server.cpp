@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 15:59:07 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 09:48:35 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,7 +382,7 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 	// 아니라면 초입 3단계 확인 후 등록 및 motd
 	if (client->getIsRegister())
 	{
-		const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
+		const std::string	&msg = client->getSendString() + " " + client->getCmd();
 		
 		client->sendMsg(msg);
 	}
@@ -426,7 +426,7 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 		}
 		else
 		{
-			const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
+			const std::string	&msg = client->getSendString() + " " + client->getCmd();
 
 			client->sendMsg(msg);
 		}
@@ -604,7 +604,7 @@ void	Server::commandPrivmsg(Client *client, const std::vector<std::string> &args
 {
 	std::string			cmd(args[0]);
 	std::string			recip(args[1]);
-	const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
+	const std::string	&msg = client->getSendString() + " " + client->getCmd();
 
 	if (args[args.size() - 1][0] != ':')
 	{
@@ -664,7 +664,7 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 	}
 	else if (!targetChannel)
 	{
-		const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
+		const std::string	&msg = client->getSendString() + " " + client->getCmd();
 		
 		targetChannel = initChannel(client, targetChannelName);
 		client->sendMsg(msg);
@@ -685,7 +685,7 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 			client->sendMsg(ERR_BADCHANNELKEY(this->serverName_, client->getNickName(), targetChannel->getChannelName()));
 			return ;
 		}
-		const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
+		const std::string	&msg = client->getSendString() + " " + client->getCmd();
 
 		client->sendMsg(msg);
 		targetChannel->addChannelMember(client);
@@ -700,7 +700,7 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 
 void	Server::commandPart(Client *client, const std::vector<std::string> &args)
 {
-	const std::string	&msg = ":" + client->getSendString() + " " + client->getCmd();
+	const std::string	&msg = client->getSendString() + " " + client->getCmd();
 	const std::string	&targetChannelName(args[1]);
 	Channel				*targetChannel = this->findChannel(targetChannelName);
 
