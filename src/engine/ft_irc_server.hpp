@@ -6,14 +6,13 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:32:01 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 13:20:14 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 14:33:39 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_IRC_SERVER_HPP
 # define FT_IRC_SERVER_HPP
 
-// # include "../../includes/ft_irc.hpp"
 # include "../../includes/ft_irc_define.hpp"
 # include "../../includes/ft_irc_include.hpp"
 # include "../../includes/ft_irc_numeric_err.hpp"

@@ -6,14 +6,12 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:34:45 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 13:58:14 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 14:34:13 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_IRC_NUMERIC_ERR_HPP
 # define FT_IRC_NUMERIC_ERR_HPP
-
-// # include "ft_irc_include.hpp"
 
 // 400
 # define ERR_UNKNOWNERROR(server, client, command, info) ((":") + server + " 400 " + client + " " + command + ":" + info) 

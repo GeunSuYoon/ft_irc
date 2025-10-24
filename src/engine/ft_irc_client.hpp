@@ -6,18 +6,15 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:43:31 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/23 14:31:48 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 14:33:48 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_IRC_CLIENT_HPP
 # define FT_IRC_CLIENT_HPP
 
-// # include "../../includes/ft_irc.hpp"
 # include "../../includes/ft_irc_define.hpp"
 # include "../../includes/ft_irc_include.hpp"
-// # include "../../includes/ft_irc_numeric_err.hpp"
-// # include "../../includes/ft_irc_numeric_rpl.hpp"
 # include "./ft_irc_channel.hpp"
 
 class	Channel;

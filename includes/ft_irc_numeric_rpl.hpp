@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 12:39:56 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 13:17:04 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 14:32:21 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 // 003
 # define RPL_CREATED(server, client, datetime) ((":") + server + " 003 " + client + " This server was created " + datetime)
 // 004
-# define RPL_MYINFO(server, client, version, usermod, channmod) ((":") + server + " 004 " + client + server + version + usermod + channmod)
+# define RPL_MYINFO(server, client, version, usermod, channmod) ((":") + server + " 004 " + client + " " + server + " " + version + " " + usermod + " " + channmod)
 // 005
 # define RPL_ISUPPORT(server, client, tokens) ((":") + server + " 005 " + client + " " + tokens + " :are supported by this server")
 
