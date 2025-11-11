@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 15:52:29 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/11/11 10:52:20 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,24 @@ void	Server::runServer(void)
 							else
 								break ;
 						}
+					}
+					else
+					{
+						int	targetClientFd = targetClient->getFd();
+
+						this->clients_.erase(std::remove(this->clients_.begin(), \
+							this->clients_.end(), targetClient), this->clients_.end());
+						delete (targetClient);
+						for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
+						{
+							if (it->fd == targetClientFd)
+							{
+								this->fds_.erase(it);
+								break ;
+							}
+						}
+						close(targetClientFd);
+						std::cerr << "ERROR: Client has disconnected: recv" << std::endl;
 					}
 				}
 				else
