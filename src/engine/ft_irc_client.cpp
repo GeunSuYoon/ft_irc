@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 09:11:48 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 13:24:00 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 15:53:13 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ const std::string	Client::invalNickChar_ = " ,*?!@";
 const std::string	Client::invalNickStartChar_ = "$:";
 
 Client::Client(int fd)
-	: fd_(fd), port_(fd), isPass_(false), isNick_(false), isUser_(false), isRegister_(false), ipAddr_(""), userName_(""), nickName_(""), realName_(""), hostName_(""), password_(""), buffer_("")
+	: fd_(fd), port_(fd), isPass_(false), isNick_(false), isUser_(false), isRegister_(false), ipAddr_(""), userName_(""), nickName_(""), realName_(""), hostName_(""), password_(""), buffer_(""), isInvisible_(true)
 { }
 
 Client::~Client(void)
@@ -97,6 +97,11 @@ std::string	Client::getSendString(void) const
 	return (":" + this->nickName_ + "!" + this->userName_ + "@" + this->ipAddr_);
 }
 
+const std::vector<Channel *>	&Client::getJoinedChannels() const
+{
+	return (this->joinedChannels_);
+}
+
 void	Client::setPort(uint16_t port)
 {
 	this->port_ = port;
@@ -150,6 +155,11 @@ void	Client::setHostName(const std::string &hostName)
 void	Client::setPassword(const std::string &password)
 {
 	this->password_ = password;
+}
+
+void	Client::setIsInvisible(bool isInvisible)
+{
+	this->isInvisible_ = isInvisible;
 }
 
 void	Client::sendMsg(const std::string &msg)

@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:43:31 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 14:33:48 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 15:52:55 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ class	Client
 		std::string	buffer_;
 		std::string	cmd_;
 
+		bool		isInvisible_;
+
 		std::vector<Channel *>	joinedChannels_;
 
 		static const std::string	invalNickChar_;
@@ -63,6 +65,8 @@ class	Client
 		std::string	const	&getPassword(void) const;
 		std::string	const	&getBuffer(void) const;
 		std::string	const	&getCmd(void) const;
+		
+		const std::vector<Channel *>	&getJoinedChannels() const;
 
 		std::string			getSendString(void) const;
 
@@ -77,6 +81,7 @@ class	Client
 		void	setNickName(const std::string &nickName);
 		void	setHostName(const std::string &hostName);
 		void	setPassword(const std::string &password);
+		void	setIsInvisible(bool isInvisible);
 
 		void	sendMsg(const std::string &msg);
 

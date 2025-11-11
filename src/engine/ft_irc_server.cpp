@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 14:30:43 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/10/24 15:52:29 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,12 +325,10 @@ void	Server::commandPass(Client *client, const std::vector<std::string> &args)
 		return ;
 	if (this->password_ != args[1])
 	{
-		client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
-		return ;
-	}
-	if (client->getIsRegister() || client->getIsPass())
-	{
-		client->sendMsg(ERR_ALREADYREGISTERED(this->serverName_, client->getNickName()));
+		if (client->getIsNick())
+			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, client->getNickName()));
+		else
+			client->sendMsg(ERR_PASSWDMISMATCH(this->serverName_, "*"));
 		return ;
 	}
 	client->setIsPass(true);
@@ -338,7 +336,8 @@ void	Server::commandPass(Client *client, const std::vector<std::string> &args)
 
 void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 {
-	std::string	nick(args[1]);
+	std::string			nick(args[1]);
+	const std::string	&msg = client->getSendString() + " " + args[0] + " :" + nick;
 
 	if (client->getNickName() == nick)
 		return ;
@@ -380,7 +379,7 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 					if (it->fd == clientFd)
 					{
 						this->fds_.erase(it);
-						break;
+						break ;
 					}
 				}
 				close(clientFd);
@@ -390,9 +389,13 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 	}
 	if (client->getIsRegister())
 	{
-		const std::string	&msg = client->getSendString() + " " + client->getCmd();
-		
+		std::cout << msg << std::endl;
 		client->sendMsg(msg);
+		for (std::vector<Channel *>::const_iterator clientChannelList = client->getJoinedChannels().begin(); \
+			clientChannelList != client->getJoinedChannels().end(); clientChannelList++)
+		{
+			this->broadcastChannel(*(clientChannelList), msg, client, false);
+		}
 	}
 	// if it is not registered but all register process is done, change to register
 	else if (client->getIsPass() && client->getIsNick() && client->getIsUser())
@@ -646,14 +649,23 @@ void	Server::commandMode(Client *client, const std::vector<std::string> &args)
 			client->sendMsg(ERR_USERSDONTMATCH(this->serverName_, client->getNickName()));
 			return ;
 		}
-		else if (args[2] != "+i" && args[2] != "-i")
+		else if (args[2] == "+i")
 		{
-			client->sendMsg(ERR_UMODEUNKNOWNFLAG(this->serverName_, client->getNickName()));
+			std::string	msg = client->getSendString() + " " + client->getCmd();
+
+			client->setIsInvisible(true);
+			client->sendMsg(msg);
 			return ;
 		}
-		std::string	msg = client->getSendString() + " " + client->getCmd();
+		else if (args[2] == "-i")
+		{
+			std::string	msg = client->getSendString() + " " + client->getCmd();
 
-		client->sendMsg(msg);
+			client->setIsInvisible(false);
+			client->sendMsg(msg);
+			return ;
+		}
+		client->sendMsg(ERR_UMODEUNKNOWNFLAG(this->serverName_, client->getNickName()));
 		return ;
 	}
 
