@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:41:51 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/11/11 10:52:20 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/11/11 11:35:25 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,20 +226,7 @@ void	Server::runServer(void)
 					}
 					else
 					{
-						int	targetClientFd = targetClient->getFd();
-
-						this->clients_.erase(std::remove(this->clients_.begin(), \
-							this->clients_.end(), targetClient), this->clients_.end());
-						delete (targetClient);
-						for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
-						{
-							if (it->fd == targetClientFd)
-							{
-								this->fds_.erase(it);
-								break ;
-							}
-						}
-						close(targetClientFd);
+						this->deleteClient(targetClient);
 						std::cerr << "ERROR: Client has disconnected: recv" << std::endl;
 					}
 				}
@@ -386,21 +373,8 @@ void	Server::commandNick(Client *client, const std::vector<std::string> &args)
 				this->sendMsgClient(client, client->getNickName(), "", "", "", code);
 			else
 			{
-				int	clientFd = client->getFd();
-				
 				this->sendMsgClient(client, "*", "", "", "", code);
-				this->clients_.erase(std::remove(this->clients_.begin(), \
-					this->clients_.end(), client), this->clients_.end());
-				delete (client);
-				for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
-				{
-					if (it->fd == clientFd)
-					{
-						this->fds_.erase(it);
-						break ;
-					}
-				}
-				close(clientFd);
+				this->deleteClient(client);
 			}
 			return ;
 		}
@@ -458,6 +432,7 @@ void	Server::commandUser(Client *client, const std::vector<std::string> &args)
 	else
 		client->sendMsg(ERR_NEEDMOREPARAMS(this->serverName_, client->getNickName(), COMMAND_USER));
 }
+
 void	Server::commandKick(Client *client, const std::vector<std::string> &args)
 {
 	if (!client->getIsRegister())
@@ -501,8 +476,9 @@ void	Server::commandKick(Client *client, const std::vector<std::string> &args)
 			std::string	msg = client->getSendString() + " " + client->getCmd();
 			
 			this->broadcastChannel(targetChannel, msg, client, true);
-			targetClient->leaveChannel(targetChannel);
-			targetChannel->removeChannelMember(targetClient);
+			targetClient->sendMsg(msg);
+			// targetClient->leaveChannel(targetChannel);
+			// targetChannel->removeChannelMember(targetClient);
 			return ;
 		}
 		default:
@@ -556,11 +532,11 @@ void	Server::commandInvite(Client *client, const std::vector<std::string> &args)
 		{
 			std::string	msg = client->getSendString() + " " + args[0] + " " + targetClientName + " :" + targetChannelName;
 			
-			this->broadcastChannel(targetChannel, msg, client, false);
-			targetClient->joinChannel(targetChannel);
-			targetChannel->addChannelMember(targetClient);
 			client->sendMsg(RPL_INVITING(this->serverName_, client->getNickName(), targetClientName, targetChannelName));
-			targetClient->sendMsg(msg);
+			this->broadcastChannel(targetChannel, msg, client, false);
+			// targetClient->joinChannel(targetChannel);
+			// targetChannel->addChannelMember(targetClient);
+			// targetClient->sendMsg(msg);
 			return ;
 		}
 		default:
@@ -626,7 +602,7 @@ void	Server::commandTopic(Client *client, const std::vector<std::string> &args)
 		default:
 		{
 			std::string	channelTopic = targetChannel->getTopic();
-	
+
 			if (targetChannel->findTargetClient(client->getNickName()))
 			{
 				if (channelTopic.size())
@@ -804,7 +780,7 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 	{
 		// join the new channel
 		const std::string	&msg = client->getSendString() + " " + client->getCmd();
-		
+
 		targetChannel = initChannel(client, targetChannelName);
 		client->sendMsg(msg);
 		if (targetChannel->getTopic().size())
@@ -824,8 +800,8 @@ void	Server::commandJoin(Client *client, const std::vector<std::string> &args)
 				const std::string	&msg = client->getSendString() + " " + client->getCmd();
 
 				client->sendMsg(msg);
-				targetChannel->addChannelMember(client);
-				client->joinChannel(targetChannel);
+				// targetChannel->addChannelMember(client);
+				// client->joinChannel(targetChannel);
 				if (targetChannel->getTopic().size())
 					client->sendMsg(RPL_TOPIC(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getTopic()));
 				client->sendMsg(RPL_NAMREPLY(this->serverName_, client->getNickName(), targetChannelName, targetChannel->getChannelMembersName()));
@@ -899,7 +875,6 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 {
 	(void)args;
 	Client								*targetClient = client;
-	int									clientFd = targetClient->getFd();
 	std::vector<Channel *>::iterator	channelList = this->channels_.begin();
 	Channel								*targetChannel;
 
@@ -918,19 +893,7 @@ void	Server::commandQuit(Client *client, const std::vector<std::string> &args)
 			channelList++;
 		}
 	}
-
-	this->clients_.erase(std::remove(this->clients_.begin(), \
-		this->clients_.end(), client), this->clients_.end());
-	for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
-	{
-		if (it->fd == clientFd)
-		{
-			this->fds_.erase(it);
-			break;
-		}
-	}
-	close(clientFd);
-	delete (targetClient);
+	this->deleteClient(client);
 }
 
 void	Server::commandCap(Client *client, const std::vector<std::string> &args)
@@ -989,6 +952,24 @@ Channel	*Server::findChannel(const std::string &channelName)
 		}
 	}
 	return (NULL);
+}
+
+void	Server::deleteClient(Client *client)
+{
+	int	ClientFd = client->getFd();
+
+	this->clients_.erase(std::remove(this->clients_.begin(), \
+		this->clients_.end(), client), this->clients_.end());
+	delete (client);
+	for (std::vector<pollfd>::iterator it = this->fds_.begin(); it != this->fds_.end(); ++it)
+	{
+		if (it->fd == ClientFd)
+		{
+			this->fds_.erase(it);
+			break ;
+		}
+	}
+	close(ClientFd);
 }
 
 int	Server::isTargetMatch(Client *client, const std::string &cmd, const std::vector<std::string> &args) const

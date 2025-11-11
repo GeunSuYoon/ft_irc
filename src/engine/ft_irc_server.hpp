@@ -6,7 +6,7 @@
 /*   By: geuyoon <geuyoon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:32:01 by geuyoon           #+#    #+#             */
-/*   Updated: 2025/10/24 14:33:39 by geuyoon          ###   ########.fr       */
+/*   Updated: 2025/11/11 11:21:43 by geuyoon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ class	Server
 		Client	*findClientFd(int fd);
 		Channel	*findChannel(const std::string &channelName);
 
+		void	deleteClient(Client *client);
 
 		int		isTargetMatch(Client *client, const std::string &cmd, const std::vector<std::string> &args) const;
 
